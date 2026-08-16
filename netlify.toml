@@ -1,9 +1,5 @@
 [build]
   publish = "."
-  functions = "netlify/functions"
-
-[functions]
-  node_bundler = "esbuild"
 
 # Redundant safety net: headers are primarily served from the _headers file,
 # but declaring the CSP here too means it survives even if that file is

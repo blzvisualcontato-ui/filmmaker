@@ -22,5 +22,5 @@
 /js/vendor/*
   Cache-Control: public, max-age=31536000, immutable
 
-/.netlify/functions/contact
-  Cache-Control: no-store
+/assets/img/*
+  Cache-Control: public, max-age=31536000, immutable
