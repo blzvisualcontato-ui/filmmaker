@@ -37,6 +37,12 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   const rust = new THREE.MeshStandardMaterial({ color: 0xC35423, metalness: .5, roughness: .35 });
   const glass = new THREE.MeshStandardMaterial({ color: 0x2b2622, metalness: .9, roughness: .12, emissive: 0xC35423, emissiveIntensity: .14 });
   const screenMat = new THREE.MeshStandardMaterial({ color: 0x100e0c, metalness: .3, roughness: .2, emissive: 0xC35423, emissiveIntensity: .05 });
+  // rubberized grip + a pro-lens-style red ring + a green-coated glass element,
+  // styled after a real DSLR body/lens (no photo used, just the look of one)
+  const borracha = new THREE.MeshStandardMaterial({ color: 0x18100c, metalness: .1, roughness: .82 });
+  const redRing = new THREE.MeshStandardMaterial({ color: 0xC81E2A, metalness: .4, roughness: .3 });
+  const glassGreen = new THREE.MeshStandardMaterial({ color: 0x142118, metalness: .95, roughness: .08, emissive: 0x2e6b46, emissiveIntensity: .3 });
+  const glassGreenInner = new THREE.MeshStandardMaterial({ color: 0x0c1610, metalness: .9, roughness: .1, emissive: 0x1f4a30, emissiveIntensity: .22 });
 
   /* --- smartphone --- */
   const phone = new THREE.Group();
@@ -69,9 +75,12 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
   cam.add(new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.74, 0.4), carvao));
 
-  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.74, 0.42), tinta);
+  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.74, 0.42), borracha);
   grip.position.set(0.44, -0.02, 0.02);
   cam.add(grip);
+  const gripThumb = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.14, 0.16), borracha);
+  gripThumb.position.set(0.4, 0.32, -0.14);
+  cam.add(gripThumb);
 
   const finder = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.18, 0.3), tinta);
   finder.position.set(-0.05, 0.44, -0.02);
@@ -89,25 +98,54 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   dial.position.set(0.42, 0.4, 0.0);
   cam.add(dial);
 
-  const mount = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.035, 16, 48), tinta);
+  const mount = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.04, 16, 48), tinta);
   mount.rotation.x = Math.PI / 2;
   mount.position.set(-0.05, 0, 0.22);
   cam.add(mount);
 
-  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.24, 0.62, 32), carvao);
-  barrel.rotation.x = Math.PI / 2;
-  barrel.position.set(-0.05, 0, 0.5);
-  cam.add(barrel);
+  // stepped lens barrel: wider base tapering toward the front element
+  const barrelBack = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.26, 0.3, 32), carvao);
+  barrelBack.rotation.x = Math.PI / 2;
+  barrelBack.position.set(-0.05, 0, 0.38);
+  cam.add(barrelBack);
 
-  const focusRing = new THREE.Mesh(new THREE.TorusGeometry(0.235, 0.05, 12, 48), rust);
+  const focusRing = new THREE.Mesh(new THREE.TorusGeometry(0.25, 0.055, 12, 48), carvao);
   focusRing.rotation.x = Math.PI / 2;
-  focusRing.position.set(-0.05, 0, 0.62);
+  focusRing.position.set(-0.05, 0, 0.56);
   cam.add(focusRing);
 
-  const frontGlass = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2.2), glass);
+  const afSwitch = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.02), rust);
+  afSwitch.position.set(-0.28, -0.02, 0.44);
+  afSwitch.rotation.y = Math.PI / 2;
+  cam.add(afSwitch);
+
+  const barrelFront = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.25, 0.34, 32), carvao);
+  barrelFront.rotation.x = Math.PI / 2;
+  barrelFront.position.set(-0.05, 0, 0.75);
+  cam.add(barrelFront);
+
+  // signature red ring, like an L-series lens
+  const redBand = new THREE.Mesh(new THREE.TorusGeometry(0.222, 0.018, 10, 48), redRing);
+  redBand.rotation.x = Math.PI / 2;
+  redBand.position.set(-0.05, 0, 0.9);
+  cam.add(redBand);
+
+  // front glass: a black bezel around two nested green-coated elements,
+  // suggesting depth the way a real lens looks when you peer into it
+  const bezel = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.02, 12, 48), tinta);
+  bezel.rotation.x = Math.PI / 2;
+  bezel.position.set(-0.05, 0, 0.93);
+  cam.add(bezel);
+
+  const frontGlass = new THREE.Mesh(new THREE.SphereGeometry(0.19, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2.6), glassGreen);
   frontGlass.rotation.x = Math.PI / 2;
-  frontGlass.position.set(-0.05, 0, 0.83);
+  frontGlass.position.set(-0.05, 0, 0.9);
   cam.add(frontGlass);
+
+  const innerGlass = new THREE.Mesh(new THREE.SphereGeometry(0.11, 28, 28, 0, Math.PI * 2, 0, Math.PI / 2.4), glassGreenInner);
+  innerGlass.rotation.x = Math.PI / 2;
+  innerGlass.position.set(-0.05, 0, 0.86);
+  cam.add(innerGlass);
 
   // lights (palette-driven)
   scene.add(new THREE.AmbientLight(0xF9F8F3, .55));
