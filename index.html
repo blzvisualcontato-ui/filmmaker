@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>BLZ Visual — Filmmaker autoral</title>
+<meta name="description" content="BLZ Visual: cinegrafia autoral para documentários, casamentos e marcas. Filmes com ritmo, luz e silêncio no lugar certo." />
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#0b0b0c" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+
+<!-- Defense-in-depth CSP (authoritative policy is served as a real HTTP header — see /_headers) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests;" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="BLZ Visual — Filmmaker autoral" />
+<meta property="og:description" content="Cinegrafia autoral para documentários, casamentos e marcas." />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b0b0c'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23d98a3d' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23d98a3d'/%3E%3C/svg%3E" />
+
+<link rel="preload" href="assets/fonts/fraunces-normal-var.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/public-sans-var.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="grain" aria-hidden="true"></div>
+<canvas id="scene" class="scene-canvas" aria-hidden="true"></canvas>
+
+<header class="site-header" data-reveal-header>
+  <a class="brand" href="#inicio" aria-label="BLZ Visual — início">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40" width="34" height="34">
+        <circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="20" cy="20" r="4.5" fill="currentColor"/>
+        <line x1="20" y1="3" x2="20" y2="9" stroke="currentColor" stroke-width="1.4"/>
+        <line x1="20" y1="31" x2="20" y2="37" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+    </span>
+    <span class="brand-word">BLZ<span class="brand-word-sub">Visual</span></span>
+  </a>
+
+  <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="primaryNav">
+    <span class="nav-toggle-bar" aria-hidden="true"></span>
+    <span class="visually-hidden">Abrir menu</span>
+  </button>
+
+  <nav class="primary-nav" id="primaryNav" aria-label="Navegação principal">
+    <ul>
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#trabalhos">Trabalhos</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="#servicos">Serviços</a></li>
+      <li><a href="#contato" class="nav-cta">Contato</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="conteudo">
+
+  <section id="inicio" class="hero" aria-label="Abertura">
+    <p class="hero-eyebrow reveal" data-reveal>Filmmaker autoral — baseado no Brasil, disponível para o mundo</p>
+    <h1 class="hero-title reveal" data-reveal>
+      Histórias reais,<br />
+      contadas <em>quadro</em> a quadro.
+    </h1>
+    <p class="hero-lede reveal" data-reveal>
+      Sou o cineasta por trás da <strong>BLZ Visual</strong>. Transformo casamentos,
+      documentários e marcas em filmes que respiram — luz, ritmo e silêncio
+      exatamente onde precisam estar.
+    </p>
+    <div class="hero-actions reveal" data-reveal>
+      <a class="btn btn-primary" href="#trabalhos">Ver trabalhos</a>
+      <a class="btn btn-ghost" href="#contato">Solicitar orçamento</a>
+    </div>
+    <a class="scroll-cue" href="#trabalhos" aria-label="Rolar para a seção de trabalhos">
+      <span></span>
+    </a>
+  </section>
+
+  <section id="trabalhos" class="work" aria-labelledby="work-title">
+    <div class="section-head">
+      <p class="section-kicker reveal" data-reveal>01 — Trabalhos</p>
+      <h2 id="work-title" class="section-title reveal" data-reveal>Uma seleção de projetos recentes</h2>
+    </div>
+
+    <ul class="work-grid" role="list">
+      <li class="work-card reveal" data-reveal data-hue="28">
+        <a href="#contato" class="work-card-link">
+          <span class="work-card-media" aria-hidden="true">
+            <span class="work-card-play">▶</span>
+          </span>
+          <span class="work-card-info">
+            <span class="work-card-title">Maré Alta</span>
+            <span class="work-card-meta">Documentário · 2025</span>
+          </span>
+        </a>
+      </li>
+      <li class="work-card work-card--tall reveal" data-reveal data-hue="200">
+        <a href="#contato" class="work-card-link">
+          <span class="work-card-media" aria-hidden="true">
+            <span class="work-card-play">▶</span>
+          </span>
+          <span class="work-card-info">
+            <span class="work-card-title">Ana &amp; Rafael</span>
+            <span class="work-card-meta">Casamento · 2025</span>
+          </span>
+        </a>
+      </li>
+      <li class="work-card reveal" data-reveal data-hue="10">
+        <a href="#contato" class="work-card-link">
+          <span class="work-card-media" aria-hidden="true">
+            <span class="work-card-play">▶</span>
+          </span>
+          <span class="work-card-info">
+            <span class="work-card-title">Origem</span>
+            <span class="work-card-meta">Curta-metragem · 2024</span>
+          </span>
+        </a>
+      </li>
+      <li class="work-card reveal" data-reveal data-hue="150">
+        <a href="#contato" class="work-card-link">
+          <span class="work-card-media" aria-hidden="true">
+            <span class="work-card-play">▶</span>
+          </span>
+          <span class="work-card-info">
+            <span class="work-card-title">Feito à Mão</span>
+            <span class="work-card-meta">Marca · 2024</span>
+          </span>
+        </a>
+      </li>
+      <li class="work-card work-card--tall reveal" data-reveal data-hue="35">
+        <a href="#contato" class="work-card-link">
+          <span class="work-card-media" aria-hidden="true">
+            <span class="work-card-play">▶</span>
+          </span>
+          <span class="work-card-info">
+            <span class="work-card-title">Sob o Mesmo Céu</span>
+            <span class="work-card-meta">Documentário · 2023</span>
+          </span>
+        </a>
+      </li>
+      <li class="work-card reveal" data-reveal data-hue="185">
+        <a href="#contato" class="work-card-link">
+          <span class="work-card-media" aria-hidden="true">
+            <span class="work-card-play">▶</span>
+          </span>
+          <span class="work-card-info">
+            <span class="work-card-title">Instante</span>
+            <span class="work-card-meta">Editorial · 2023</span>
+          </span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <section id="sobre" class="about" aria-labelledby="about-title">
+    <div class="about-visual reveal" data-reveal aria-hidden="true">
+      <span class="about-visual-mark">B.</span>
+    </div>
+    <div class="about-copy">
+      <p class="section-kicker reveal" data-reveal>02 — Sobre</p>
+      <h2 id="about-title" class="section-title reveal" data-reveal>Câmera na mão, ideia na cabeça</h2>
+      <p class="reveal" data-reveal>
+        Comecei filmando shows de amigos com uma câmera emprestada. Hoje dirijo,
+        capto e finalizo projetos do início ao fim — sozinho quando o projeto
+        pede intimidade, ou com uma equipe enxuta quando pede escala. O fio
+        condutor é sempre o mesmo: deixar a história ditar a forma, nunca o
+        contrário.
+      </p>
+      <p class="reveal" data-reveal>
+        Trabalho com documentário, casamento e conteúdo de marca — sempre com
+        o mesmo cuidado que aplicaria a um longa. Luz natural sempre que
+        possível, som limpo sempre, e edição que respeita o tempo de quem
+        assiste.
+      </p>
+      <dl class="stats reveal" data-reveal>
+        <div class="stat">
+          <dt>Anos de estrada</dt>
+          <dd data-counter="9">0</dd>
+        </div>
+        <div class="stat">
+          <dt>Projetos entregues</dt>
+          <dd data-counter="120">0</dd>
+        </div>
+        <div class="stat">
+          <dt>Seleções em festivais</dt>
+          <dd data-counter="6">0</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="servicos" class="services" aria-labelledby="services-title">
+    <div class="section-head">
+      <p class="section-kicker reveal" data-reveal>03 — Serviços</p>
+      <h2 id="services-title" class="section-title reveal" data-reveal>Do roteiro à entrega final</h2>
+    </div>
+    <ol class="services-list">
+      <li class="service reveal" data-reveal>
+        <span class="service-index">01</span>
+        <div class="service-body">
+          <h3>Direção &amp; roteiro</h3>
+          <p>Estrutura narrativa, decupagem e planejamento de captação antes de ligar a câmera.</p>
+        </div>
+      </li>
+      <li class="service reveal" data-reveal>
+        <span class="service-index">02</span>
+        <div class="service-body">
+          <h3>Cinematografia</h3>
+          <p>Captação em 4K/6K, luz natural e controlada, estabilização e composição autoral.</p>
+        </div>
+      </li>
+      <li class="service reveal" data-reveal>
+        <span class="service-index">03</span>
+        <div class="service-body">
+          <h3>Captação aérea</h3>
+          <p>Drone licenciado para planos amplos, transições e contexto de locação.</p>
+        </div>
+      </li>
+      <li class="service reveal" data-reveal>
+        <span class="service-index">04</span>
+        <div class="service-body">
+          <h3>Edição &amp; color grading</h3>
+          <p>Montagem, trilha, mixagem básica e correção de cor com identidade visual própria.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="clients" aria-labelledby="clients-title">
+    <h2 id="clients-title" class="visually-hidden">Marcas e produtoras parceiras</h2>
+    <p class="clients-kicker reveal" data-reveal>Já colaborei com</p>
+    <ul class="clients-row reveal" data-reveal role="list">
+      <li>Norte Estúdio</li>
+      <li>Cais Filmes</li>
+      <li>Casa Alvorada</li>
+      <li>Raiz Produções</li>
+      <li>Ponte Criativa</li>
+    </ul>
+  </section>
+
+  <section id="contato" class="contact" aria-labelledby="contact-title">
+    <div class="section-head">
+      <p class="section-kicker reveal" data-reveal>04 — Contato</p>
+      <h2 id="contact-title" class="section-title reveal" data-reveal>Vamos contar essa história</h2>
+      <p class="reveal" data-reveal>
+        Conta um pouco sobre o projeto — data, formato e referências, se tiver.
+        Respondo pessoalmente em até dois dias úteis.
+      </p>
+    </div>
+
+    <div class="contact-grid">
+      <form class="contact-form reveal" data-reveal id="contactForm" novalidate autocomplete="on">
+        <div class="form-row">
+          <label for="name">Nome</label>
+          <input type="text" id="name" name="name" required minlength="2" maxlength="100" autocomplete="name" />
+          <span class="form-error" id="name-error" role="alert"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" required maxlength="254" autocomplete="email" />
+          <span class="form-error" id="email-error" role="alert"></span>
+        </div>
+
+        <div class="form-row">
+          <label for="message">Mensagem</label>
+          <textarea id="message" name="message" required minlength="10" maxlength="2000" rows="5"></textarea>
+          <span class="form-error" id="message-error" role="alert"></span>
+        </div>
+
+        <!-- Honeypot: hidden from humans, visible to naive bots. A non-empty value silently rejects the submission server-side. -->
+        <div class="form-row form-row--honeypot" aria-hidden="true">
+          <label for="company">Empresa</label>
+          <input type="text" id="company" name="company" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <input type="hidden" name="form_ts" id="form_ts" value="" />
+
+        <button type="submit" class="btn btn-primary" id="contactSubmit">Enviar mensagem</button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="contact-direct reveal" data-reveal>
+        <p><a href="mailto:contato@blzvisual.com">contato@blzvisual.com</a></p>
+        <p><a href="https://www.instagram.com/" rel="noopener noreferrer" target="_blank">@blzvisual</a></p>
+        <p>São Paulo, Brasil — atende em todo o país</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>© <span id="year">2026</span> BLZ Visual. Todos os direitos reservados.</p>
+  <a href="#inicio" class="back-to-top">Voltar ao topo ↑</a>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
