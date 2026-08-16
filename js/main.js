@@ -23,26 +23,52 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-  camera.position.set(0, 0, 8.5);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  camera.position.set(0, 0, 9);
 
   const rig = new THREE.Group();
-  rig.scale.setScalar(1.35);
+  rig.scale.setScalar(1.55);
   scene.add(rig);
 
-  const tinta = new THREE.MeshStandardMaterial({ color: 0x231F1C, metalness: .55, roughness: .38 });
-  const carvao = new THREE.MeshStandardMaterial({ color: 0x343330, metalness: .5, roughness: .42 });
-  const rust = new THREE.MeshStandardMaterial({ color: 0xC35423, metalness: .5, roughness: .35 });
+  // hard plastic bodies get a clearcoat for that glossy-product-shot sheen;
+  // the rubber grip stays matte
+  const tinta = new THREE.MeshPhysicalMaterial({ color: 0x2c2723, metalness: .5, roughness: .32, clearcoat: .6, clearcoatRoughness: .25 });
+  const carvao = new THREE.MeshPhysicalMaterial({ color: 0x3d3b37, metalness: .45, roughness: .35, clearcoat: .5, clearcoatRoughness: .3 });
+  const rust = new THREE.MeshStandardMaterial({ color: 0xC35423, metalness: .5, roughness: .3 });
   const glass = new THREE.MeshStandardMaterial({ color: 0x2b2622, metalness: .9, roughness: .12, emissive: 0xC35423, emissiveIntensity: .14 });
-  const screenMat = new THREE.MeshStandardMaterial({ color: 0x100e0c, metalness: .3, roughness: .2, emissive: 0xC35423, emissiveIntensity: .05 });
   // rubberized grip + a pro-lens-style red ring + a green-coated glass element,
   // styled after a real DSLR body/lens (no photo used, just the look of one)
-  const borracha = new THREE.MeshStandardMaterial({ color: 0x18100c, metalness: .1, roughness: .82 });
-  const redRing = new THREE.MeshStandardMaterial({ color: 0xC81E2A, metalness: .4, roughness: .3 });
-  const glassGreen = new THREE.MeshStandardMaterial({ color: 0x142118, metalness: .95, roughness: .08, emissive: 0x2e6b46, emissiveIntensity: .3 });
-  const glassGreenInner = new THREE.MeshStandardMaterial({ color: 0x0c1610, metalness: .9, roughness: .1, emissive: 0x1f4a30, emissiveIntensity: .22 });
+  const borracha = new THREE.MeshStandardMaterial({ color: 0x1e1610, metalness: .05, roughness: .85 });
+  const redRing = new THREE.MeshPhysicalMaterial({ color: 0xD22030, metalness: .35, roughness: .28, clearcoat: .7 });
+  const glassGreen = new THREE.MeshPhysicalMaterial({ color: 0x1a2e20, metalness: .9, roughness: .06, clearcoat: 1, emissive: 0x2e6b46, emissiveIntensity: .35 });
+  const glassGreenInner = new THREE.MeshPhysicalMaterial({ color: 0x0e1a12, metalness: .85, roughness: .08, clearcoat: 1, emissive: 0x1f4a30, emissiveIntensity: .26 });
+
+  // phone screen: a small canvas-drawn video-editor mockup used as a texture,
+  // so the screen reads as an active UI instead of a flat dark rectangle
+  const screenCanvas = document.createElement('canvas');
+  screenCanvas.width = 256; screenCanvas.height = 512;
+  const sctx = screenCanvas.getContext('2d');
+  const bgGrad = sctx.createLinearGradient(0, 0, 0, 512);
+  bgGrad.addColorStop(0, '#241a12'); bgGrad.addColorStop(1, '#0d0a08');
+  sctx.fillStyle = bgGrad; sctx.fillRect(0, 0, 256, 512);
+  sctx.fillStyle = 'rgba(249,248,243,.5)'; sctx.fillRect(18, 22, 56, 6);
+  sctx.fillStyle = '#160f0a'; sctx.fillRect(18, 60, 220, 300);
+  sctx.fillStyle = '#C35423';
+  sctx.beginPath(); sctx.arc(128, 210, 36, 0, Math.PI * 2); sctx.fill();
+  sctx.fillStyle = '#F9F8F3';
+  sctx.beginPath(); sctx.moveTo(117, 191); sctx.lineTo(117, 229); sctx.lineTo(147, 210); sctx.closePath(); sctx.fill();
+  sctx.fillStyle = 'rgba(249,248,243,.15)'; sctx.fillRect(18, 382, 220, 6);
+  sctx.fillStyle = '#C35423'; sctx.fillRect(18, 382, 92, 6);
+  sctx.fillStyle = 'rgba(249,248,243,.4)'; sctx.fillRect(18, 412, 160, 10);
+  sctx.fillStyle = 'rgba(249,248,243,.25)'; sctx.fillRect(18, 434, 110, 10);
+  const screenTex = new THREE.CanvasTexture(screenCanvas);
+  screenTex.colorSpace = THREE.SRGBColorSpace;
+  const screenMat = new THREE.MeshStandardMaterial({ map: screenTex, emissiveMap: screenTex, emissive: 0xffffff, emissiveIntensity: .55, roughness: .35, metalness: .1 });
 
   /* --- smartphone --- */
   const phone = new THREE.Group();
@@ -147,13 +173,18 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   innerGlass.position.set(-0.05, 0, 0.86);
   cam.add(innerGlass);
 
-  // lights (palette-driven)
-  scene.add(new THREE.AmbientLight(0xF9F8F3, .55));
-  const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(4, 5, 6); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xC35423, .9); rim.position.set(-6, -2, 2); scene.add(rim);
-  const fill = new THREE.PointLight(0xF9F8F3, .6); fill.position.set(0, 0, 7); scene.add(fill);
+  // studio-style lighting rig: strong key, soft fill, warm rim + a cool
+  // kicker for edge separation — this is what makes the flat-black plastic
+  // read as rounded product photography instead of a flat silhouette
+  scene.add(new THREE.AmbientLight(0xF9F8F3, .38));
+  const key = new THREE.DirectionalLight(0xfff4e6, 2.2); key.position.set(4, 5.5, 6.5); scene.add(key);
+  const fillLight = new THREE.DirectionalLight(0xF9F8F3, .7); fillLight.position.set(-3, 1, 5); scene.add(fillLight);
+  const rim = new THREE.DirectionalLight(0xC35423, 1.4); rim.position.set(-6, -2, 2); scene.add(rim);
+  const kicker = new THREE.DirectionalLight(0x8fb8c9, .8); kicker.position.set(2, -4, -3); scene.add(kicker);
+  const fill = new THREE.PointLight(0xF9F8F3, .8, 14); fill.position.set(0, 1.5, 7); scene.add(fill);
 
-  rig.rotation.x = -0.18;
+  const BASE_ROT_X = -0.16;
+  const BASE_ROT_Y = 0.24;
 
   // interaction state
   let targetRot = 0, curRot = 0, spin = 0;
@@ -195,8 +226,8 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
     curRot += (targetRot - curRot) * 0.06;
     mx += (tmx - mx) * 0.06; my += (tmy - my) * 0.06;
 
-    rig.rotation.y = curRot + spin + (reduce ? 0 : t * 0.12) + mx;
-    rig.rotation.x = -0.18 + my;
+    rig.rotation.y = BASE_ROT_Y + curRot + spin + (reduce ? 0 : t * 0.1) + mx;
+    rig.rotation.x = BASE_ROT_X + my;
     if (!reduce) rig.position.y = Math.sin(t * 0.9) * 0.12;
 
     // camera's manual focus ring turns as you scroll, like a real lens
@@ -215,6 +246,9 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, 1.33, 0.1, 100);
   camera.position.set(0, 2.4, 8);
@@ -330,6 +364,9 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1.6, 0.1, 100);
   camera.position.z = 12;
