@@ -69,6 +69,7 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   const screenTex = new THREE.CanvasTexture(screenCanvas);
   screenTex.colorSpace = THREE.SRGBColorSpace;
   const screenMat = new THREE.MeshStandardMaterial({ map: screenTex, emissiveMap: screenTex, emissive: 0xffffff, emissiveIntensity: .55, roughness: .35, metalness: .1 });
+  const flashMat = new THREE.MeshStandardMaterial({ color: 0xF9F8F3, metalness: .1, roughness: .3, emissive: 0xF9F8F3, emissiveIntensity: .2 });
 
   /* --- smartphone --- */
   const phone = new THREE.Group();
@@ -76,22 +77,53 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   phone.rotation.y = 0.32;
   rig.add(phone);
 
-  phone.add(new THREE.Mesh(new THREE.BoxGeometry(0.64, 1.38, 0.09), tinta));
+  // body has a hair more depth + a slightly lighter side frame, like the
+  // metal band around a real phone's glass front/back
+  phone.add(new THREE.Mesh(new THREE.BoxGeometry(0.66, 1.4, 0.11), tinta));
+  const frameBand = new THREE.Mesh(new THREE.BoxGeometry(0.685, 1.415, 0.075), carvao);
+  phone.add(frameBand);
 
-  const phoneScreen = new THREE.Mesh(new THREE.BoxGeometry(0.54, 1.2, 0.02), screenMat);
-  phoneScreen.position.z = 0.055;
+  // edge-to-edge screen, thin even bezel
+  const phoneScreen = new THREE.Mesh(new THREE.BoxGeometry(0.58, 1.28, 0.02), screenMat);
+  phoneScreen.position.z = 0.065;
   phone.add(phoneScreen);
 
-  const camBump = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.28, 0.03), carvao);
-  camBump.position.set(-0.15, 0.48, -0.06);
+  // dynamic-island-style notch
+  const notch = new THREE.Mesh(new THREE.CapsuleGeometry(0.028, 0.1, 4, 16), borracha);
+  notch.rotation.z = Math.PI / 2;
+  notch.position.set(0, 0.6, 0.077);
+  phone.add(notch);
+
+  // side buttons: volume rocker (left) + power button (right), a small
+  // color accent like a lot of phones do
+  const volUp = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.1, 0.05), rust);
+  volUp.position.set(-0.335, 0.32, 0);
+  phone.add(volUp);
+  const volDown = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.1, 0.05), rust);
+  volDown.position.set(-0.335, 0.14, 0);
+  phone.add(volDown);
+  const powerBtn = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.14, 0.05), rust);
+  powerBtn.position.set(0.335, 0.38, 0);
+  phone.add(powerBtn);
+
+  // triple-camera module, each lens with its own bezel ring, plus an LED flash
+  const camBump = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.035), carvao);
+  camBump.position.set(-0.16, 0.5, -0.07);
   phone.add(camBump);
 
-  [[-0.06, 0.06], [0.06, 0.06], [-0.06, -0.06]].forEach(([ox, oy]) => {
+  [[-0.065, 0.065], [0.065, 0.065], [-0.065, -0.065]].forEach(([ox, oy]) => {
+    const bezelRing = new THREE.Mesh(new THREE.TorusGeometry(0.052, 0.012, 10, 24), tinta);
+    bezelRing.position.set(-0.16 + ox, 0.5 + oy, -0.088);
+    phone.add(bezelRing);
     const lensDot = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.02, 20), glass);
     lensDot.rotation.x = Math.PI / 2;
-    lensDot.position.set(-0.15 + ox, 0.48 + oy, -0.085);
+    lensDot.position.set(-0.16 + ox, 0.5 + oy, -0.09);
     phone.add(lensDot);
   });
+  const flashLed = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.015, 16), flashMat);
+  flashLed.rotation.x = Math.PI / 2;
+  flashLed.position.set(-0.095, 0.565, -0.088);
+  phone.add(flashLed);
 
   /* --- professional camera --- */
   const cam = new THREE.Group();
