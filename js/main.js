@@ -15,9 +15,9 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold: .15 });
 document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
-/* ---------- 3D LENS (Three.js) ---------- */
+/* ---------- 3D HERO RIG: smartphone + professional camera (Three.js) ---------- */
 (function () {
-  const canvas = document.getElementById('lens-canvas');
+  const canvas = document.getElementById('hero-canvas');
   if (!window.THREE || !canvas) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -28,39 +28,86 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
   camera.position.set(0, 0, 8.5);
 
-  const lens = new THREE.Group();
-  scene.add(lens);
+  const rig = new THREE.Group();
+  rig.scale.setScalar(1.35);
+  scene.add(rig);
 
   const tinta = new THREE.MeshStandardMaterial({ color: 0x231F1C, metalness: .55, roughness: .38 });
+  const carvao = new THREE.MeshStandardMaterial({ color: 0x343330, metalness: .5, roughness: .42 });
   const rust = new THREE.MeshStandardMaterial({ color: 0xC35423, metalness: .5, roughness: .35 });
   const glass = new THREE.MeshStandardMaterial({ color: 0x2b2622, metalness: .9, roughness: .12, emissive: 0xC35423, emissiveIntensity: .14 });
+  const screenMat = new THREE.MeshStandardMaterial({ color: 0x100e0c, metalness: .3, roughness: .2, emissive: 0xC35423, emissiveIntensity: .05 });
 
-  // stacked barrel rings (lens body)
-  const rings = [];
-  const ringData = [
-    { r: 2.15, t: .42, z: -1.1, m: tinta },
-    { r: 1.95, t: .34, z: -0.55, m: tinta },
-    { r: 1.78, t: .30, z: -0.05, m: rust },
-    { r: 1.62, t: .26, z: 0.4, m: tinta },
-    { r: 1.45, t: .22, z: 0.75, m: tinta },
-  ];
-  ringData.forEach((d) => {
-    const geo = new THREE.TorusGeometry(d.r, d.t, 24, 80);
-    const mesh = new THREE.Mesh(geo, d.m);
-    mesh.position.z = d.z;
-    lens.add(mesh); rings.push(mesh);
+  /* --- smartphone --- */
+  const phone = new THREE.Group();
+  phone.position.set(-1.05, -0.05, 0.1);
+  phone.rotation.y = 0.32;
+  rig.add(phone);
+
+  phone.add(new THREE.Mesh(new THREE.BoxGeometry(0.64, 1.38, 0.09), tinta));
+
+  const phoneScreen = new THREE.Mesh(new THREE.BoxGeometry(0.54, 1.2, 0.02), screenMat);
+  phoneScreen.position.z = 0.055;
+  phone.add(phoneScreen);
+
+  const camBump = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.28, 0.03), carvao);
+  camBump.position.set(-0.15, 0.48, -0.06);
+  phone.add(camBump);
+
+  [[-0.06, 0.06], [0.06, 0.06], [-0.06, -0.06]].forEach(([ox, oy]) => {
+    const lensDot = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.02, 20), glass);
+    lensDot.rotation.x = Math.PI / 2;
+    lensDot.position.set(-0.15 + ox, 0.48 + oy, -0.085);
+    phone.add(lensDot);
   });
 
-  // front glass element (slightly domed)
-  const front = new THREE.Mesh(new THREE.SphereGeometry(1.55, 48, 48, 0, Math.PI * 2, 0, Math.PI / 2.4), glass);
-  front.rotation.x = Math.PI / 2;
-  front.position.z = 1.05;
-  lens.add(front);
+  /* --- professional camera --- */
+  const cam = new THREE.Group();
+  cam.position.set(0.95, -0.1, 0.3);
+  cam.rotation.y = -0.36;
+  rig.add(cam);
 
-  // aperture blades (thin rotating ring)
-  const iris = new THREE.Mesh(new THREE.TorusGeometry(1.15, .07, 12, 60), rust);
-  iris.position.z = 1.02;
-  lens.add(iris);
+  cam.add(new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.74, 0.4), carvao));
+
+  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.74, 0.42), tinta);
+  grip.position.set(0.44, -0.02, 0.02);
+  cam.add(grip);
+
+  const finder = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.18, 0.3), tinta);
+  finder.position.set(-0.05, 0.44, -0.02);
+  cam.add(finder);
+
+  const hotshoe = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.06, 0.1), carvao);
+  hotshoe.position.set(-0.05, 0.55, -0.02);
+  cam.add(hotshoe);
+
+  const shutter = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.03, 20), rust);
+  shutter.position.set(0.42, 0.4, 0.16);
+  cam.add(shutter);
+
+  const dial = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.02, 24), tinta);
+  dial.position.set(0.42, 0.4, 0.0);
+  cam.add(dial);
+
+  const mount = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.035, 16, 48), tinta);
+  mount.rotation.x = Math.PI / 2;
+  mount.position.set(-0.05, 0, 0.22);
+  cam.add(mount);
+
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.24, 0.62, 32), carvao);
+  barrel.rotation.x = Math.PI / 2;
+  barrel.position.set(-0.05, 0, 0.5);
+  cam.add(barrel);
+
+  const focusRing = new THREE.Mesh(new THREE.TorusGeometry(0.235, 0.05, 12, 48), rust);
+  focusRing.rotation.x = Math.PI / 2;
+  focusRing.position.set(-0.05, 0, 0.62);
+  cam.add(focusRing);
+
+  const frontGlass = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2.2), glass);
+  frontGlass.rotation.x = Math.PI / 2;
+  frontGlass.position.set(-0.05, 0, 0.83);
+  cam.add(frontGlass);
 
   // lights (palette-driven)
   scene.add(new THREE.AmbientLight(0xF9F8F3, .55));
@@ -68,7 +115,7 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   const rim = new THREE.DirectionalLight(0xC35423, .9); rim.position.set(-6, -2, 2); scene.add(rim);
   const fill = new THREE.PointLight(0xF9F8F3, .6); fill.position.set(0, 0, 7); scene.add(fill);
 
-  lens.rotation.x = -0.25;
+  rig.rotation.x = -0.18;
 
   // interaction state
   let targetRot = 0, curRot = 0, spin = 0;
@@ -110,14 +157,12 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
     curRot += (targetRot - curRot) * 0.06;
     mx += (tmx - mx) * 0.06; my += (tmy - my) * 0.06;
 
-    lens.rotation.y = curRot + spin + (reduce ? 0 : t * 0.12) + mx;
-    lens.rotation.x = -0.25 + my;
-    if (!reduce) lens.position.y = Math.sin(t * 0.9) * 0.12;
+    rig.rotation.y = curRot + spin + (reduce ? 0 : t * 0.12) + mx;
+    rig.rotation.x = -0.18 + my;
+    if (!reduce) rig.position.y = Math.sin(t * 0.9) * 0.12;
 
-    // rings "focus": subtle counter-motion
-    rings.forEach((rg, i) => rg.rotation.z = curRot * (0.06 * (i + 1)) + spin * 0.4);
-    iris.rotation.z = -curRot * 0.5 - spin;
-    iris.scale.setScalar(1 + Math.sin(curRot * 0.5) * 0.08); // aperture breathe
+    // camera's manual focus ring turns as you scroll, like a real lens
+    focusRing.rotation.z = curRot * 0.6 + spin;
 
     renderer.render(scene, camera);
   }
