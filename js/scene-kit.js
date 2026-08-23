@@ -1,9 +1,9 @@
 /**
  * Shared parts for the site's 3D scenes.
  *
- * The hero and the turntable both build from this, so the camera body is
- * authored once and the studio environment, materials and geometry helpers are
- * not duplicated across two modules.
+ * Everything modelled here is kit BLZ Visual actually owns: a phone, a
+ * three-axis gimbal, a clip-on macro lens and a lavalier mic. Nothing in the
+ * scenes should imply gear that is not in the bag.
  */
 import * as THREE from './vendor/three.module.min.js';
 
@@ -15,12 +15,16 @@ export const CREAM = 0xF7EFE6;
 /**
  * A box with real bevelled edges.
  *
- * Hard 90-degree corners are what made the old body read as a toy: an edge with
- * no bevel catches no highlight, so the silhouette goes dead. A small rounded
- * edge picks up a specular line and is most of the difference between "blocky"
- * and "machined".
+ * A hard 90-degree corner catches no highlight, so the silhouette goes dead. A
+ * small rounded edge picks up a specular line and is most of the difference
+ * between "blocky" and "machined".
  */
 export function roundedBox(w, h, d, r = 0.03, curve = 3) {
+  // The radius has to fit inside all three dimensions. Without this clamp a
+  // thin part with a generous radius silently came out 2r deep instead of d,
+  // so two parts of different thicknesses could end up exactly coplanar and
+  // fight for the same depth — which is what made surfaces crawl on phones.
+  r = Math.max(0.0008, Math.min(r, d / 2 - 0.0005, w / 2 - 0.001, h / 2 - 0.001));
   const x = w / 2 - r, y = h / 2 - r;
   const s = new THREE.Shape();
   s.moveTo(-x - r, -y);
@@ -64,8 +68,7 @@ export function knurlRing(material, { radius, count = 56, w = 0.014, depth = 0.0
  *
  * Metallic and clearcoat surfaces take nearly all their brightness from
  * reflections, so with no environment they render as flat near-black shapes
- * however many lights are added. Two soft boxes, a warm floor bounce and a cool
- * kicker are what give the bodies their rolled highlights.
+ * however many lights are added.
  */
 export function studioEnvironment(renderer) {
   const c = document.createElement('canvas');
@@ -136,6 +139,7 @@ export function makeMaterials() {
     metal: new THREE.MeshStandardMaterial({ color: 0x9a938b, metalness: .96, roughness: .25 }),
     metalDark: new THREE.MeshStandardMaterial({ color: 0x544f4a, metalness: .9, roughness: .38 }),
     rubber: new THREE.MeshStandardMaterial({ color: 0x1d1712, metalness: .04, roughness: .94 }),
+    foam: new THREE.MeshStandardMaterial({ color: 0x2b2521, metalness: 0, roughness: 1 }),
     terra: new THREE.MeshPhysicalMaterial({ color: TERRA, metalness: .35, roughness: .3, clearcoat: .6 }),
     cream: new THREE.MeshStandardMaterial({ color: CREAM, metalness: .12, roughness: .48 }),
     coated: new THREE.MeshPhysicalMaterial({
@@ -155,55 +159,7 @@ export function makeMaterials() {
 
 /* ---------------------------------------------------------------- screens */
 
-/** The small monochrome top plate readout on the camera. */
-function topLcdTexture() {
-  const c = document.createElement('canvas');
-  c.width = 256; c.height = 128;
-  const x = c.getContext('2d');
-  x.fillStyle = '#8d9a86'; x.fillRect(0, 0, 256, 128);
-  x.fillStyle = '#1b201a';
-  x.font = 'bold 46px Helvetica, Arial, sans-serif';
-  x.fillText('4K', 14, 56);
-  x.font = 'bold 30px Helvetica, Arial, sans-serif';
-  x.fillText('60p', 96, 54);
-  x.font = 'bold 26px Helvetica, Arial, sans-serif';
-  x.fillText('f/1.4', 14, 100);
-  x.fillText('ISO 400', 104, 100);
-  for (let i = 0; i < 5; i++) { x.fillRect(196 + i * 11, 20 + (4 - i) * 3, 7, 12 + i * 4); }
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-}
-
-/** The articulated rear monitor, showing a framed shot mid-record. */
-function rearScreenTexture() {
-  const c = document.createElement('canvas');
-  c.width = 320; c.height = 214;
-  const x = c.getContext('2d');
-  const g = x.createLinearGradient(0, 0, 320, 214);
-  g.addColorStop(0, '#c9743f'); g.addColorStop(.5, '#6d3520'); g.addColorStop(1, '#140e0b');
-  x.fillStyle = g; x.fillRect(0, 0, 320, 214);
-
-  x.strokeStyle = 'rgba(247,239,230,.30)'; x.lineWidth = 2;
-  for (let i = 1; i < 3; i++) {
-    x.beginPath(); x.moveTo((320 / 3) * i, 12); x.lineTo((320 / 3) * i, 202); x.stroke();
-    x.beginPath(); x.moveTo(12, (214 / 3) * i); x.lineTo(308, (214 / 3) * i); x.stroke();
-  }
-  x.strokeStyle = 'rgba(247,239,230,.85)'; x.lineWidth = 3;
-  [[26, 26, 1, 1], [294, 26, -1, 1], [26, 188, 1, -1], [294, 188, -1, -1]].forEach(([px, py, sx, sy]) => {
-    x.beginPath(); x.moveTo(px, py + 20 * sy); x.lineTo(px, py); x.lineTo(px + 22 * sx, py); x.stroke();
-  });
-  x.fillStyle = '#e2432c';
-  x.beginPath(); x.arc(40, 200, 7, 0, Math.PI * 2); x.fill();
-  x.fillStyle = 'rgba(247,239,230,.92)';
-  x.font = 'bold 15px Helvetica, Arial, sans-serif';
-  x.fillText('REC  00:12', 54, 206);
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return t;
-}
-
-/** The phone screen: a reels editor mid-edit. */
+/** The phone screen: a reels editor mid-edit, so it reads as in use. */
 export function phoneScreenTexture() {
   const c = document.createElement('canvas');
   c.width = 256; c.height = 512;
@@ -241,270 +197,268 @@ export function phoneScreenTexture() {
   return t;
 }
 
-/* ------------------------------------------------------------- the camera */
+/* -------------------------------------------------------------- the phone */
 
 /**
- * A professional camera body with a fast prime.
+ * The phone. This is the camera on this job, so it carries the detail.
  *
- * Returns { group, focusRing } so a caller can spin the focus ring
- * independently of the body.
+ * Every surface detail sits a clear distance proud of the panel it belongs to.
+ * Decals a fraction of a millimetre off their host face were what made the
+ * textures shimmer on phones, where the depth buffer has less precision to
+ * separate two nearly-coplanar surfaces.
  */
-export function buildCamera(M, { hood = true } = {}) {
-  const cam = new THREE.Group();
-  const add = (mesh, x = 0, y = 0, z = 0) => { mesh.position.set(x, y, z); cam.add(mesh); return mesh; };
-
-  /* --- body --- */
-  add(new THREE.Mesh(roundedBox(1.16, 0.78, 0.44, 0.06), M.shell));
-  // inset top plate in metal, so the body reads as two machined parts
-  add(new THREE.Mesh(roundedBox(1.1, 0.1, 0.4, 0.035), M.metalDark), 0, 0.37, 0);
-
-  // sculpted grip
-  const grip = add(new THREE.Mesh(roundedBox(0.3, 0.8, 0.46, 0.09), M.rubber), 0.46, -0.03, 0.02);
-  grip.scale.z = 1.04;
-  add(new THREE.Mesh(roundedBox(0.19, 0.16, 0.18, 0.05), M.rubber), 0.42, 0.33, -0.16);
-  // finger ridge on the grip front
-  add(new THREE.Mesh(new THREE.CapsuleGeometry(0.028, 0.44, 4, 10), M.rubber), 0.6, -0.05, 0.14);
-
-  /* --- pentaprism, eyecup, hot shoe --- */
-  const prism = add(new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.27, 0.22, 4), M.shell), -0.07, 0.47, -0.02);
-  prism.rotation.y = Math.PI / 4;
-  add(new THREE.Mesh(roundedBox(0.26, 0.17, 0.1, 0.04), M.rubber), -0.07, 0.42, -0.24);
-
-  const shoe = add(new THREE.Mesh(roundedBox(0.17, 0.05, 0.14, 0.012), M.metalDark), -0.07, 0.6, -0.02);
-  shoe.castShadow = false;
-  const pin = new THREE.BoxGeometry(0.018, 0.022, 0.018);
-  [-0.045, 0, 0.045].forEach((ox) => add(new THREE.Mesh(pin, M.metal), -0.07 + ox, 0.625, -0.02));
-
-  /* --- top plate controls --- */
-  const lcd = add(new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.13), new THREE.MeshStandardMaterial({
-    map: topLcdTexture(), roughness: .5, metalness: .05,
-  })), -0.42, 0.425, 0.02);
-  lcd.rotation.x = -Math.PI / 2;
-
-  const dial = add(new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.055, 26), M.metalDark), 0.4, 0.42, -0.06);
-  const ticks = new THREE.InstancedMesh(new THREE.BoxGeometry(0.012, 0.056, 0.024), M.metal, 12);
-  {
-    const m = new THREE.Matrix4(), q = new THREE.Quaternion();
-    const e = new THREE.Euler(), v = new THREE.Vector3(), one = new THREE.Vector3(1, 1, 1);
-    for (let i = 0; i < 12; i++) {
-      const a = (i / 12) * Math.PI * 2;
-      v.set(Math.cos(a) * 0.079, 0.03, Math.sin(a) * 0.079);
-      e.set(0, -a, 0);
-      m.compose(v, q.setFromEuler(e), one);
-      ticks.setMatrixAt(i, m);
-    }
-  }
-  add(ticks, 0.4, 0.42, -0.06);
-  dial.rotation.y = 0.2;
-
-  add(new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.035, 20), M.terra), 0.44, 0.43, 0.15);
-  add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.03, 20), M.metalDark), 0.2, 0.42, 0.12);
-
-  /* --- rear monitor, articulated slightly open --- */
-  const screenHinge = new THREE.Group();
-  screenHinge.position.set(-0.52, -0.02, -0.22);
-  screenHinge.rotation.y = 0.34;
-  cam.add(screenHinge);
-  const panel = new THREE.Mesh(roundedBox(0.62, 0.44, 0.035, 0.02), M.shellDark);
-  panel.position.set(0.29, 0, 0);
-  screenHinge.add(panel);
-  const rear = new THREE.Mesh(new THREE.PlaneGeometry(0.55, 0.37), new THREE.MeshStandardMaterial({
-    map: rearScreenTexture(), emissiveMap: rearScreenTexture(), emissive: 0xffffff,
-    emissiveIntensity: .5, roughness: .22, metalness: .05,
-  }));
-  rear.position.set(0.29, 0, -0.021);
-  rear.rotation.y = Math.PI;
-  screenHinge.add(rear);
-
-  /* --- strap lugs, ports door, tripod plate --- */
-  const lug = new THREE.TorusGeometry(0.045, 0.014, 8, 16);
-  [[-0.6, 0.3], [0.6, 0.3]].forEach(([lx, ly]) => {
-    const l = add(new THREE.Mesh(lug, M.metal), lx, ly, 0);
-    l.rotation.y = Math.PI / 2;
-  });
-  add(new THREE.Mesh(roundedBox(0.03, 0.34, 0.26, 0.015), M.rubber), -0.585, -0.06, 0.02);
-  add(new THREE.Mesh(roundedBox(0.34, 0.06, 0.3, 0.02), M.metalDark), 0.02, -0.4, 0);
-
-  /* --- front plate --- */
-  add(new THREE.Mesh(roundedBox(0.3, 0.024, 0.014, 0.008), M.terra), -0.38, 0.28, 0.222);
-  const lamp = add(new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.016, 14), M.darkGlass), -0.43, 0.09, 0.222);
-  lamp.rotation.x = Math.PI / 2;
-  const release = add(new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.05, 14), M.metalDark), 0.25, -0.06, 0.222);
-  release.rotation.x = Math.PI / 2;
-
-  /* --- lens --- */
-  const mount = add(new THREE.Mesh(new THREE.TorusGeometry(0.275, 0.04, 12, 40), M.metal), -0.06, 0, 0.235);
-  mount.rotation.x = Math.PI / 2;
-
-  const barrelBack = add(new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.268, 0.3, 32), M.shellDark), -0.06, 0, 0.39);
-  barrelBack.rotation.x = Math.PI / 2;
-
-  // zoom ring, then the focus ring the caller can turn
-  const zoom = new THREE.Group();
-  zoom.position.set(-0.06, 0, 0.55);
-  cam.add(zoom);
-  zoom.add(new THREE.Mesh(new THREE.CylinderGeometry(0.248, 0.248, 0.12, 30), M.shellDark).rotateX(Math.PI / 2));
-  zoom.add(knurlRing(M.metalDark, { radius: 0.254, count: 48, w: 0.012, depth: 0.02, len: 0.1 }));
-
-  const focusRing = new THREE.Group();
-  focusRing.position.set(-0.06, 0, 0.72);
-  cam.add(focusRing);
-  focusRing.add(new THREE.Mesh(new THREE.CylinderGeometry(0.242, 0.242, 0.17, 30), M.shellDark).rotateX(Math.PI / 2));
-  focusRing.add(knurlRing(M.metalDark, { radius: 0.248, count: 64, w: 0.014, depth: 0.026, len: 0.15 }));
-
-  // distance window
-  const win = add(new THREE.Mesh(roundedBox(0.16, 0.06, 0.01, 0.008), M.darkGlass), -0.06, 0.25, 0.46);
-  win.rotation.x = -0.1;
-
-  const barrelFront = add(new THREE.Mesh(new THREE.CylinderGeometry(0.222, 0.242, 0.2, 30), M.shellDark), -0.06, 0, 0.9);
-  barrelFront.rotation.x = Math.PI / 2;
-
-  const band = add(new THREE.Mesh(new THREE.TorusGeometry(0.224, 0.017, 8, 40), M.terra), -0.06, 0, 0.985);
-  band.rotation.x = Math.PI / 2;
-
-  const bezel = add(new THREE.Mesh(new THREE.TorusGeometry(0.206, 0.022, 10, 40), M.metal), -0.06, 0, 1.03);
-  bezel.rotation.x = Math.PI / 2;
-
-  // Nearly flat: a front element is close to planar, and the depth comes from
-  // the stack behind it rather than from bulging the glass out.
-  const front = add(new THREE.Mesh(
-    new THREE.SphereGeometry(0.19, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2.3), M.coated,
-  ), -0.06, 0, 1.015);
-  front.rotation.x = Math.PI / 2;
-  front.scale.set(1, 0.13, 1);
-
-  const retainer = add(new THREE.Mesh(new THREE.TorusGeometry(0.188, 0.009, 8, 36), M.metalDark), -0.06, 0, 1.017);
-  retainer.rotation.x = Math.PI / 2;
-
-  const inner = add(new THREE.Mesh(
-    new THREE.SphereGeometry(0.13, 26, 10, 0, Math.PI * 2, 0, Math.PI / 2.3), M.coatedInner,
-  ), -0.06, 0, 0.975);
-  inner.rotation.x = Math.PI / 2;
-  inner.scale.set(1, 0.16, 1);
-
-  const iris = add(new THREE.Mesh(new THREE.CircleGeometry(0.088, 7), M.terra), -0.06, 0, 0.945);
-  iris.rotation.z = Math.PI / 7;
-  const irisCore = add(new THREE.Mesh(new THREE.CircleGeometry(0.05, 7),
-    new THREE.MeshBasicMaterial({ color: 0x0a0705 })), -0.06, 0, 0.948);
-  irisCore.rotation.z = Math.PI / 7;
-
-  if (hood) {
-    // A hood has to be dead matte: on a thin open cylinder the body's clearcoat
-    // catches so much specular that it reads as a glass bulb over the lens.
-    const hoodMat = new THREE.MeshStandardMaterial({
-      color: 0x171310, metalness: .02, roughness: .96, side: THREE.DoubleSide,
-    });
-    const h = add(new THREE.Mesh(
-      new THREE.CylinderGeometry(0.285, 0.216, 0.42, 30, 1, true), hoodMat,
-    ), -0.06, 0, 1.24);
-    h.rotation.x = Math.PI / 2;
-    const lip = add(new THREE.Mesh(new THREE.TorusGeometry(0.285, 0.011, 8, 40), hoodMat), -0.06, 0, 1.45);
-    lip.rotation.x = Math.PI / 2;
-    // ribbed inner wall, the way a real hood kills reflections
-    const ribs = knurlRing(hoodMat, { radius: 0.24, count: 40, w: 0.01, depth: 0.016, len: 0.36 });
-    add(ribs, -0.06, 0, 1.24);
-  }
-
-  return { group: cam, focusRing };
-}
-
-/* -------------------------------------------------------- the other gear */
-
-/** A fast prime standing on its mount, cap off. */
-export function buildLens(M) {
+export function buildPhone(M) {
   const g = new THREE.Group();
   const add = (mesh, x = 0, y = 0, z = 0) => { mesh.position.set(x, y, z); g.add(mesh); return mesh; };
-  const barrel = add(new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.34, 0.9, 32), M.shellDark), 0, 0, 0);
-  add(new THREE.Mesh(new THREE.TorusGeometry(0.345, 0.04, 12, 40), M.metal), 0, -0.44, 0).rotation.x = Math.PI / 2;
-  const kn = knurlRing(M.metalDark, { radius: 0.312, count: 60, w: 0.016, depth: 0.028, len: 0.26 });
-  kn.rotation.x = Math.PI / 2;
-  add(kn, 0, 0.06, 0);
-  add(new THREE.Mesh(new THREE.TorusGeometry(0.288, 0.018, 8, 40), M.terra), 0, 0.36, 0).rotation.x = Math.PI / 2;
-  add(new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.024, 10, 40), M.metal), 0, 0.45, 0).rotation.x = Math.PI / 2;
-  const glass = add(new THREE.Mesh(
-    new THREE.SphereGeometry(0.245, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2.3), M.coated,
-  ), 0, 0.45, 0);
-  glass.scale.set(1, 0.16, 1);
-  return g;
-}
 
-/** Clapperboard, sticks slightly open. */
-export function buildClapper(M) {
-  const g = new THREE.Group();
-  const slate = new THREE.Mesh(roundedBox(1.2, 0.9, 0.05, 0.03), M.shellDark);
-  g.add(slate);
-  for (let i = 0; i < 4; i++) {
-    const line = new THREE.Mesh(roundedBox(1.06, 0.018, 0.008, 0.004), M.cream);
-    line.position.set(0, 0.22 - i * 0.19, 0.03);
-    g.add(line);
-  }
-  const stickHinge = new THREE.Group();
-  stickHinge.position.set(-0.6, 0.5, 0);
-  stickHinge.rotation.z = -0.32;
-  g.add(stickHinge);
-  const stick = new THREE.Mesh(roundedBox(1.2, 0.17, 0.05, 0.02), M.shellDark);
-  stick.position.set(0.6, 0, 0);
-  stickHinge.add(stick);
-  // diagonal stripes
-  for (let i = 0; i < 6; i++) {
-    const s = new THREE.Mesh(roundedBox(0.1, 0.17, 0.012, 0.004), i % 2 ? M.cream : M.terra);
-    s.position.set(0.14 + i * 0.2, 0, 0.03);
-    s.rotation.z = 0.32;
-    stickHinge.add(s);
-  }
-  return g;
-}
+  add(new THREE.Mesh(roundedBox(0.7, 1.46, 0.078, 0.06), M.shellDark));
+  // side band is wider than the body so it shows only at the rim, never
+  // fighting the front or back face for the same depth
+  add(new THREE.Mesh(roundedBox(0.726, 1.486, 0.052, 0.06), M.metal));
 
-/** LED panel on a stand. */
-export function buildLight(M) {
-  const g = new THREE.Group();
-  const head = new THREE.Mesh(roundedBox(1.0, 0.72, 0.14, 0.04), M.shell);
-  head.position.y = 0.62;
-  g.add(head);
-  const face = new THREE.Mesh(new THREE.PlaneGeometry(0.88, 0.6), new THREE.MeshStandardMaterial({
-    color: 0xE8DFD2, emissive: 0xffeed8, emissiveIntensity: .55, roughness: .6,
-  }));
-  face.position.set(0, 0.62, 0.075);
-  g.add(face);
-  const yoke = new THREE.Mesh(new THREE.TorusGeometry(0.44, 0.03, 8, 24, Math.PI), M.metalDark);
-  yoke.position.y = 0.62;
-  yoke.rotation.z = Math.PI;
-  g.add(yoke);
-  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.9, 16), M.metal);
-  post.position.y = -0.25;
-  g.add(post);
-  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.38, 0.06, 24), M.metalDark);
-  base.position.y = -0.7;
-  g.add(base);
-  return g;
-}
+  const tex = phoneScreenTexture();
+  add(new THREE.Mesh(new THREE.PlaneGeometry(0.63, 1.36), new THREE.MeshStandardMaterial({
+    map: tex, emissiveMap: tex, emissive: 0xffffff,
+    emissiveIntensity: .62, roughness: .22, metalness: .05,
+  })), 0, 0, 0.05);
 
-/** Shotgun mic in a shock mount. */
-export function buildMic(M) {
-  const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 1.3, 24), M.metalDark);
-  body.rotation.z = Math.PI / 2;
-  g.add(body);
-  const grille = new THREE.Mesh(new THREE.CylinderGeometry(0.113, 0.113, 0.62, 24), M.rubber);
-  grille.rotation.z = Math.PI / 2;
-  grille.position.x = 0.3;
-  g.add(grille);
-  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.11, 20, 12), M.metal);
-  cap.position.x = -0.65;
-  g.add(cap);
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.02, 8, 24), M.terra);
-  ring.rotation.y = Math.PI / 2;
-  ring.position.x = -0.02;
-  g.add(ring);
-  [-0.3, 0.15].forEach((x) => {
-    const m = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.022, 8, 26), M.metal);
-    m.rotation.y = Math.PI / 2;
-    m.position.x = x;
-    g.add(m);
+  const island = add(new THREE.Mesh(new THREE.CapsuleGeometry(0.026, 0.09, 4, 12), M.rubber), 0, 0.6, 0.056);
+  island.rotation.z = Math.PI / 2;
+
+  const btn = new THREE.BoxGeometry(0.018, 0.1, 0.04);
+  [[-0.358, 0.34], [-0.358, 0.17]].forEach(([px, py]) => add(new THREE.Mesh(btn, M.metalDark), px, py, 0));
+  add(new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.15, 0.04), M.terra), 0.358, 0.4, 0);
+
+  // rear camera island, standing clearly proud of the back
+  add(new THREE.Mesh(roundedBox(0.33, 0.33, 0.05, 0.05), M.shell), -0.16, 0.5, -0.062);
+  const ring = new THREE.TorusGeometry(0.054, 0.014, 10, 24);
+  const lens = new THREE.CylinderGeometry(0.046, 0.046, 0.03, 20);
+  [[-0.07, 0.07], [0.07, 0.07], [-0.07, -0.07]].forEach(([ox, oy]) => {
+    add(new THREE.Mesh(ring, M.metal), -0.16 + ox, 0.5 + oy, -0.094);
+    const l = add(new THREE.Mesh(lens, M.darkGlass), -0.16 + ox, 0.5 + oy, -0.094);
+    l.rotation.x = Math.PI / 2;
   });
-  const bar = new THREE.Mesh(roundedBox(0.62, 0.05, 0.05, 0.02), M.metalDark);
-  bar.position.y = -0.22;
-  g.add(bar);
+  const flash = add(new THREE.Mesh(new THREE.CylinderGeometry(0.019, 0.019, 0.022, 16), M.cream), -0.09, 0.575, -0.09);
+  flash.rotation.x = Math.PI / 2;
+
+  return g;
+}
+
+/* ------------------------------------------------------------- the gimbal */
+
+/** Three-axis handheld gimbal, phone clamped in. */
+export function buildGimbal(M, { withPhone = true } = {}) {
+  const g = new THREE.Group();
+
+  /* handle */
+  const handle = new THREE.Group();
+  g.add(handle);
+  handle.add(new THREE.Mesh(roundedBox(0.42, 1.15, 0.4, 0.14), M.shellDark));
+  const grip = new THREE.Mesh(roundedBox(0.44, 0.66, 0.42, 0.15), M.rubber);
+  grip.position.y = -0.16;
+  handle.add(grip);
+  // base cap
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.17, 0.1, 20), M.metalDark);
+  cap.position.y = -0.62;
+  handle.add(cap);
+
+  // control face: joystick, record button, mode button — each a distinct part
+  const face = new THREE.Mesh(roundedBox(0.28, 0.5, 0.05, 0.03), M.shell);
+  face.position.set(0, 0.16, 0.215);
+  handle.add(face);
+  const stickBase = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.07, 0.04, 18), M.metalDark);
+  stickBase.rotation.x = Math.PI / 2;
+  stickBase.position.set(0, 0.3, 0.255);
+  handle.add(stickBase);
+  const stick = new THREE.Mesh(new THREE.SphereGeometry(0.052, 18, 12), M.rubber);
+  stick.position.set(0, 0.3, 0.285);
+  handle.add(stick);
+  const rec = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.04, 18), M.terra);
+  rec.rotation.x = Math.PI / 2;
+  rec.position.set(0, 0.08, 0.258);
+  handle.add(rec);
+  const mode = new THREE.Mesh(roundedBox(0.11, 0.05, 0.04, 0.015), M.metalDark);
+  mode.position.set(0, -0.05, 0.256);
+  handle.add(mode);
+
+  /* motor arms: pan on the handle, then roll, then tilt into the clamp */
+  const motorGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.26, 24);
+  const collarGeo = new THREE.TorusGeometry(0.152, 0.022, 10, 26);
+
+  const panMotor = new THREE.Mesh(motorGeo, M.shell);
+  panMotor.position.y = 0.72;
+  g.add(panMotor);
+  const panCollar = new THREE.Mesh(collarGeo, M.metal);
+  panCollar.rotation.x = Math.PI / 2;
+  panCollar.position.y = 0.845;
+  g.add(panCollar);
+
+  const armA = new THREE.Mesh(roundedBox(0.13, 0.52, 0.14, 0.05), M.shellDark);
+  armA.position.set(0, 1.06, 0);
+  g.add(armA);
+
+  const rollMotor = new THREE.Mesh(motorGeo, M.shell);
+  rollMotor.rotation.z = Math.PI / 2;
+  rollMotor.position.set(0.2, 1.32, 0);
+  g.add(rollMotor);
+  const rollCollar = new THREE.Mesh(collarGeo, M.metal);
+  rollCollar.rotation.y = Math.PI / 2;
+  rollCollar.position.set(0.33, 1.32, 0);
+  g.add(rollCollar);
+
+  const armB = new THREE.Mesh(roundedBox(0.5, 0.13, 0.14, 0.05), M.shellDark);
+  armB.position.set(0.62, 1.32, 0);
+  g.add(armB);
+
+  const tiltMotor = new THREE.Mesh(motorGeo, M.shell);
+  tiltMotor.rotation.x = Math.PI / 2;
+  tiltMotor.position.set(0.86, 1.32, 0.12);
+  g.add(tiltMotor);
+  const tiltCollar = new THREE.Mesh(collarGeo, M.metal);
+  tiltCollar.position.set(0.86, 1.32, 0.25);
+  g.add(tiltCollar);
+
+  /* clamp holding the phone */
+  const cradle = new THREE.Group();
+  cradle.position.set(0.86, 1.32, 0.46);
+  g.add(cradle);
+  const spine = new THREE.Mesh(roundedBox(0.13, 1.02, 0.12, 0.04), M.shellDark);
+  cradle.add(spine);
+  [[0.5], [-0.5]].forEach(([jy]) => {
+    const jaw = new THREE.Mesh(roundedBox(0.18, 0.11, 0.42, 0.035), M.shellDark);
+    jaw.position.set(0, jy, 0.17);
+    cradle.add(jaw);
+    const pad = new THREE.Mesh(roundedBox(0.11, 0.055, 0.38, 0.02), M.rubber);
+    pad.position.set(0, jy + (jy > 0 ? -0.06 : 0.06), 0.17);
+    cradle.add(pad);
+  });
+
+  if (withPhone) {
+    // Held upright with the screen out — portrait, which is how a reel is shot
+    // and the only orientation where the phone reads as a phone rather than a
+    // sliver seen edge-on.
+    const phone = buildPhone(M);
+    phone.scale.setScalar(0.62);
+    phone.position.set(0, 0, 0.23);
+    cradle.add(phone);
+  }
+
+  return g;
+}
+
+/* --------------------------------------------------------- the macro lens */
+
+/** Clip-on macro lens — the kind that clamps over a phone camera. */
+export function buildMacroLens(M) {
+  const g = new THREE.Group();
+
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.34, 0.52, 32), M.shellDark);
+  barrel.rotation.x = Math.PI / 2;
+  g.add(barrel);
+
+  const kn = knurlRing(M.metalDark, { radius: 0.312, count: 54, w: 0.016, depth: 0.026, len: 0.3 });
+  g.add(kn);
+
+  const band = new THREE.Mesh(new THREE.TorusGeometry(0.302, 0.02, 10, 40), M.terra);
+  band.position.z = 0.2;
+  g.add(band);
+
+  const bezel = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.028, 12, 40), M.metal);
+  bezel.position.z = 0.27;
+  g.add(bezel);
+
+  const front = new THREE.Mesh(
+    new THREE.SphereGeometry(0.25, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2.3), M.coated,
+  );
+  front.rotation.x = Math.PI / 2;
+  front.scale.set(1, 0.15, 1);
+  front.position.z = 0.255;
+  g.add(front);
+
+  const inner = new THREE.Mesh(
+    new THREE.SphereGeometry(0.15, 24, 10, 0, Math.PI * 2, 0, Math.PI / 2.3), M.coatedInner,
+  );
+  inner.rotation.x = Math.PI / 2;
+  inner.scale.set(1, 0.2, 1);
+  inner.position.z = 0.2;
+  g.add(inner);
+
+  const rear = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.025, 10, 36), M.metal);
+  rear.position.z = -0.27;
+  g.add(rear);
+
+  /* the spring clip */
+  const clip = new THREE.Group();
+  clip.position.z = -0.42;
+  g.add(clip);
+  const bridge = new THREE.Mesh(roundedBox(0.14, 0.9, 0.16, 0.045), M.shellDark);
+  bridge.position.x = -0.42;
+  clip.add(bridge);
+  [[0.42], [-0.42]].forEach(([jy]) => {
+    const arm = new THREE.Mesh(roundedBox(0.62, 0.13, 0.16, 0.045), M.shellDark);
+    arm.position.set(-0.14, jy, 0);
+    clip.add(arm);
+    const pad = new THREE.Mesh(roundedBox(0.5, 0.06, 0.14, 0.025), M.rubber);
+    pad.position.set(-0.1, jy + (jy > 0 ? -0.09 : 0.09), 0);
+    clip.add(pad);
+  });
+
+  return g;
+}
+
+/* ---------------------------------------------------------- the lapel mic */
+
+/** Lavalier mic: capsule with a foam windscreen, clip, cable and plug. */
+export function buildLapelMic(M) {
+  const g = new THREE.Group();
+
+  const capsule = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.15, 0.42, 24), M.metalDark);
+  capsule.position.y = 0.32;
+  g.add(capsule);
+  const collar = new THREE.Mesh(new THREE.TorusGeometry(0.145, 0.018, 10, 26), M.terra);
+  collar.rotation.x = Math.PI / 2;
+  collar.position.y = 0.14;
+  g.add(collar);
+
+  const foam = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 18), M.foam);
+  foam.scale.y = 1.15;
+  foam.position.y = 0.58;
+  g.add(foam);
+
+  /* clip */
+  const clip = new THREE.Group();
+  clip.position.set(0.18, 0.24, 0);
+  clip.rotation.z = -0.12;
+  g.add(clip);
+  const back = new THREE.Mesh(roundedBox(0.09, 0.62, 0.24, 0.035), M.metal);
+  clip.add(back);
+  const front = new THREE.Mesh(roundedBox(0.07, 0.46, 0.22, 0.03), M.metal);
+  front.position.set(0.16, -0.05, 0);
+  clip.add(front);
+  const hinge = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.26, 16), M.metalDark);
+  hinge.rotation.x = Math.PI / 2;
+  hinge.position.set(0.08, 0.28, 0);
+  clip.add(hinge);
+
+  /* cable, curling away to the plug */
+  const path = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0.08, 0),
+    new THREE.Vector3(-0.1, -0.3, 0.16),
+    new THREE.Vector3(-0.5, -0.62, -0.1),
+    new THREE.Vector3(-1.0, -0.5, 0.24),
+    new THREE.Vector3(-1.34, -0.86, 0.02),
+  ]);
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(path, 48, 0.035, 10, false), M.rubber));
+
+  const plugBody = new THREE.Mesh(roundedBox(0.16, 0.3, 0.16, 0.05), M.shellDark);
+  plugBody.position.set(-1.36, -0.98, 0.02);
+  plugBody.rotation.z = 0.3;
+  g.add(plugBody);
+  const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.24, 16), M.metal);
+  pin.position.set(-1.42, -1.22, 0.02);
+  pin.rotation.z = 0.3;
+  g.add(pin);
+
   return g;
 }
 

@@ -1,5 +1,7 @@
 /**
- * Hero scene — a smartphone beside the professional camera.
+ * Hero scene — the phone on its gimbal, with the macro lens alongside.
+ *
+ * This is the real working setup, so it is what the hero shows.
  *
  * Loaded on demand by main.js, never on the critical path: importing this
  * module is what pulls Three.js in, so a visitor on reduced motion, a weak
@@ -7,8 +9,8 @@
  */
 import * as THREE from './vendor/three.module.min.js';
 import {
-  TERRA, CREAM, roundedBox, studioEnvironment, shadowTexture,
-  makeMaterials, phoneScreenTexture, buildCamera, addLights,
+  studioEnvironment, shadowTexture, makeMaterials,
+  buildGimbal, buildMacroLens, addLights,
 } from './scene-kit.js';
 
 export function initHeroScene(canvas) {
@@ -23,88 +25,46 @@ export function initHeroScene(canvas) {
   const scene = new THREE.Scene();
   scene.environment = studioEnvironment(renderer);
 
-  // Raised and angled down: a product-shot three-quarter view, which also makes
-  // the ground shadow readable instead of edge-on.
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
+  // A near plane of 0.1 with a far plane of 100 spends almost all of the depth
+  // buffer's precision on space nothing occupies, which is what made close
+  // surfaces flicker against each other on phones. Nothing here is nearer than
+  // about six units, so the near plane can move out and give the range back.
+  const camera = new THREE.PerspectiveCamera(30, 1, 2, 40);
   camera.position.set(0, 1.7, 9.6);
-  camera.lookAt(0, -0.15, 0);
+  camera.lookAt(0, -0.1, 0);
 
   const rig = new THREE.Group();
-  rig.scale.setScalar(1.42);
+  rig.scale.setScalar(1.28);
   scene.add(rig);
 
   const M = makeMaterials();
 
-  /* ------------------------------------------------------------- phone */
-  const phone = new THREE.Group();
-  phone.position.set(-1.32, -0.02, 0.16);
-  phone.rotation.set(0.04, 0.38, -0.03);
-  rig.add(phone);
+  /* ------------------------------------------------- phone on the gimbal */
+  const gimbal = buildGimbal(M, { withPhone: true });
+  gimbal.position.set(-0.35, -0.55, 0);
+  gimbal.rotation.set(0.03, -0.42, 0);
+  rig.add(gimbal);
 
-  phone.add(new THREE.Mesh(roundedBox(0.7, 1.46, 0.075, 0.06), M.shellDark));
-  phone.add(new THREE.Mesh(roundedBox(0.72, 1.48, 0.055, 0.06), M.metal));
-
-  const screenTex = phoneScreenTexture();
-  const display = new THREE.Mesh(new THREE.PlaneGeometry(0.63, 1.36), new THREE.MeshStandardMaterial({
-    map: screenTex, emissiveMap: screenTex, emissive: 0xffffff,
-    emissiveIntensity: .62, roughness: .22, metalness: .05,
-  }));
-  display.position.z = 0.045;
-  phone.add(display);
-
-  const island = new THREE.Mesh(new THREE.CapsuleGeometry(0.026, 0.09, 4, 12), M.rubber);
-  island.rotation.z = Math.PI / 2;
-  island.position.set(0, 0.6, 0.05);
-  phone.add(island);
-
-  const btn = new THREE.BoxGeometry(0.016, 0.1, 0.038);
-  [[-0.355, 0.34], [-0.355, 0.17]].forEach(([px, py]) => {
-    const b = new THREE.Mesh(btn, M.metalDark);
-    b.position.set(px, py, 0);
-    phone.add(b);
-  });
-  const power = new THREE.Mesh(new THREE.BoxGeometry(0.016, 0.15, 0.038), M.terra);
-  power.position.set(0.355, 0.4, 0);
-  phone.add(power);
-
-  const bump = new THREE.Mesh(roundedBox(0.33, 0.33, 0.028, 0.05), M.shell);
-  bump.position.set(-0.16, 0.5, -0.05);
-  phone.add(bump);
-  const ring = new THREE.TorusGeometry(0.054, 0.013, 8, 22);
-  const lens = new THREE.CylinderGeometry(0.046, 0.046, 0.018, 18);
-  [[-0.07, 0.07], [0.07, 0.07], [-0.07, -0.07]].forEach(([ox, oy]) => {
-    const r = new THREE.Mesh(ring, M.metal);
-    r.position.set(-0.16 + ox, 0.5 + oy, -0.068);
-    phone.add(r);
-    const l = new THREE.Mesh(lens, M.darkGlass);
-    l.rotation.x = Math.PI / 2;
-    l.position.set(-0.16 + ox, 0.5 + oy, -0.07);
-    phone.add(l);
-  });
-  const flash = new THREE.Mesh(new THREE.CylinderGeometry(0.019, 0.019, 0.014, 14), M.cream);
-  flash.rotation.x = Math.PI / 2;
-  flash.position.set(-0.09, 0.57, -0.068);
-  phone.add(flash);
-
-  /* ------------------------------------------------------------ camera */
-  const { group: cam, focusRing } = buildCamera(M, { hood: false });
-  cam.position.set(0.86, -0.1, 0.18);
-  cam.rotation.set(0.02, -0.44, 0);
-  rig.add(cam);
+  /* ----------------------------------------------------- the macro lens */
+  const macro = buildMacroLens(M);
+  macro.scale.setScalar(0.82);
+  macro.position.set(1.62, 0.35, 0.1);
+  macro.rotation.set(0.16, -0.5, 0.24);
+  rig.add(macro);
 
   /* ------------------------------------------------------------ shadow */
   const shadow = new THREE.Mesh(
-    new THREE.PlaneGeometry(5.8, 3.2),
-    new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, opacity: .5, depthWrite: false }),
+    new THREE.PlaneGeometry(5.4, 3.0),
+    new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, opacity: .48, depthWrite: false }),
   );
   shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(0, -1.34, 0.15);
+  shadow.position.set(0.1, -1.42, 0.15);
   scene.add(shadow);
 
   addLights(scene);
 
   /* ------------------------------------------------------- interaction */
-  const BASE_X = -0.1, BASE_Y = 0.2;
+  const BASE_X = -0.08, BASE_Y = 0.22;
   let targetRot = 0, curRot = 0, spin = 0, lastScroll = scrollY;
   let mx = 0, my = 0, tmx = 0, tmy = 0;
 
@@ -135,33 +95,36 @@ export function initHeroScene(canvas) {
   resize();
 
   /* -------------------------------------------------------------- loop */
-  let onScreen = true, queued = false, t = 0;
+  let onScreen = true, queued = false, t = 0, last = 0;
 
-  function frame() {
+  function frame(now) {
     queued = false;
-    if (!onScreen || document.hidden) return;
+    if (!onScreen || document.hidden) { last = 0; return; }
     queued = true;
     requestAnimationFrame(frame);
 
-    t += 0.016;
-    spin *= 0.92;
-    curRot += (targetRot - curRot) * 0.055;
-    mx += (tmx - mx) * 0.06;
-    my += (tmy - my) * 0.06;
+    const dt = last ? Math.min((now - last) / 1000, 0.1) : 0.016;
+    last = now;
+    t += dt;
+
+    spin *= Math.pow(0.02, dt);
+    curRot += (targetRot - curRot) * (1 - Math.pow(0.03, dt));
+    mx += (tmx - mx) * (1 - Math.pow(0.03, dt));
+    my += (tmy - my) * (1 - Math.pow(0.03, dt));
 
     rig.rotation.y = BASE_Y + curRot + spin + t * 0.08 + mx;
     rig.rotation.x = BASE_X + my;
     rig.position.y = Math.sin(t * 0.85) * 0.1;
 
-    focusRing.rotation.z = curRot * 0.7 + spin * 2;
+    macro.rotation.z = 0.24 + curRot * 0.5;
 
     const lift = (rig.position.y + 0.1) / 0.2;
     shadow.scale.setScalar(1 - lift * 0.12);
-    shadow.material.opacity = 0.5 - lift * 0.12;
+    shadow.material.opacity = 0.48 - lift * 0.12;
 
     renderer.render(scene, camera);
   }
-  function start() { if (!queued) frame(); }
+  function start() { if (!queued) frame(performance.now()); }
 
   new IntersectionObserver(([e]) => {
     onScreen = e.isIntersecting;

@@ -14,15 +14,14 @@
 import * as THREE from './vendor/three.module.min.js';
 import {
   studioEnvironment, makeMaterials,
-  buildCamera, buildLens, buildClapper, buildLight, buildMic, addLights,
+  buildGimbal, buildMacroLens, buildLapelMic, addLights,
 } from './scene-kit.js';
 
+// Only kit that is actually in the bag.
 const LABELS = [
-  { name: 'Câmera + prime', note: 'captação em 4K com lente rápida' },
-  { name: 'Gimbal e lentes', note: 'movimento suave, foco preciso' },
-  { name: 'Iluminação', note: 'painel LED para qualquer ambiente' },
-  { name: 'Áudio direcional', note: 'som limpo mesmo na rua' },
-  { name: 'Claquete', note: 'organização da gravação ao corte' },
+  { name: 'Celular + gimbal', note: 'captação estabilizada, movimento suave' },
+  { name: 'Lente macro', note: 'detalhe de perto com nitidez' },
+  { name: 'Microfone de lapela', note: 'voz limpa, sem ruído de ambiente' },
 ];
 
 export function initShowcaseScene(canvas, section, labelEl) {
@@ -37,7 +36,9 @@ export function initShowcaseScene(canvas, section, labelEl) {
   const scene = new THREE.Scene();
   scene.environment = studioEnvironment(renderer);
 
-  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  // The near plane sits well out: at 0.1 almost the whole depth buffer covers
+  // space nothing occupies, which is what made close surfaces flicker on phones.
+  const camera = new THREE.PerspectiveCamera(32, 1, 2, 40);
   // Aimed at the front of the ring rather than its centre, so the item facing
   // the viewer sits in frame instead of being cropped by the bottom edge.
   camera.position.set(0, 1.15, 9.2);
@@ -51,23 +52,21 @@ export function initShowcaseScene(canvas, section, labelEl) {
   const turntable = new THREE.Group();
   scene.add(turntable);
 
-  const { group: cam, focusRing } = buildCamera(M, { hood: true });
-  cam.scale.setScalar(0.98);
+  const rig = buildGimbal(M, { withPhone: true });
+  rig.scale.setScalar(0.92);
+  rig.position.y = -0.6;
 
-  const lensStand = buildLens(M);
-  lensStand.rotation.z = 0.12;
+  const macro = buildMacroLens(M);
+  macro.scale.setScalar(1.15);
+  macro.rotation.set(0.1, -0.5, 0.14);
 
-  const light = buildLight(M);
-  light.scale.setScalar(0.85);
-
-  const mic = buildMic(M);
-  mic.rotation.z = 0.24;
-
-  const clapper = buildClapper(M);
-  clapper.rotation.set(-0.12, 0, 0.06);
+  const lapel = buildLapelMic(M);
+  lapel.scale.setScalar(1.25);
+  lapel.position.y = 0.25;
+  lapel.rotation.set(0.08, -0.35, 0.1);
 
   const RADIUS = 3.25;
-  const items = [cam, lensStand, light, mic, clapper];
+  const items = [rig, macro, lapel];
   items.forEach((obj, i) => {
     const a = (i / items.length) * Math.PI * 2;
     const holder = new THREE.Group();
@@ -158,7 +157,7 @@ export function initShowcaseScene(canvas, section, labelEl) {
     turntable.rotation.y = -progress * Math.PI * 2;
     turntable.position.y = Math.sin(t * 0.7) * 0.06;
 
-    focusRing.rotation.z = progress * 6;
+    macro.rotation.z = 0.14 + progress * 5;
     updateLabel(progress);
 
     renderer.render(scene, camera);
