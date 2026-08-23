@@ -148,13 +148,29 @@ header.scrolled{border-bottom-color:var(--line)}
   width:100%;
   min-height:360px;
 }
-#hero-canvas{width:100%;height:100%;display:block;cursor:grab}
+#hero-canvas{width:100%;height:100%;display:block;cursor:grab;opacity:0;transition:opacity .8s ease}
+.hero-stage.has-3d #hero-canvas{opacity:1}
+
+/* Static poster: an aperture, held until (or instead of) the 3D scene. */
+.stage-poster{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:1;transition:opacity .6s ease;
+}
+.hero-stage.has-3d .stage-poster{opacity:0}
+.stage-poster .ring{fill:none;stroke:var(--rust);stroke-width:1.5;opacity:.35}
+.stage-poster .ring-2{opacity:.2}
+.stage-poster .iris path{fill:var(--rust);stroke:var(--areia);stroke-width:2;opacity:.9}
+.stage-poster .iris path:nth-child(even){opacity:.7}
+.stage-poster .pupil{fill:var(--tinta)}
+
 .stage-caption{
+  opacity:0;transition:opacity .6s ease;
   position:absolute;bottom:.4rem;left:50%;transform:translateX(-50%);
   font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
-  color:var(--carvao);opacity:.55;white-space:nowrap;
+  color:var(--carvao);white-space:nowrap;
   text-transform:uppercase;
 }
+.hero-stage.has-3d .stage-caption{opacity:.6}
 .scroll-hint{
   position:absolute;bottom:1.6rem;left:var(--pad);
   font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;

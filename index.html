@@ -58,6 +58,19 @@
     </div>
     <div class="hero-stage">
       <canvas id="hero-canvas"></canvas>
+      <svg class="stage-poster" viewBox="0 0 240 240" aria-hidden="true">
+        <circle class="ring" cx="120" cy="120" r="98"/>
+        <circle class="ring ring-2" cx="120" cy="120" r="74"/>
+        <g class="iris">
+          <path d="M120 34 A86 86 0 0 1 194 77 L120 120 Z"/>
+          <path d="M194 77 A86 86 0 0 1 194 163 L120 120 Z"/>
+          <path d="M194 163 A86 86 0 0 1 120 206 L120 120 Z"/>
+          <path d="M120 206 A86 86 0 0 1 46 163 L120 120 Z"/>
+          <path d="M46 163 A86 86 0 0 1 46 77 L120 120 Z"/>
+          <path d="M46 77 A86 86 0 0 1 120 34 L120 120 Z"/>
+        </g>
+        <circle class="pupil" cx="120" cy="120" r="27"/>
+      </svg>
       <div class="stage-caption">role a página para girar a cena</div>
     </div>
     <div class="scroll-hint"><span class="dot"></span> scroll</div>
@@ -263,7 +276,6 @@
   </a>
 </div>
 
-<script type="module" src="js/vendor/three-global.js"></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>
