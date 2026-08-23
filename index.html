@@ -11,7 +11,7 @@
 
 <!-- Defense-in-depth CSP. The authoritative policy is the real HTTP header in /_headers;
      frame-ancestors is omitted here because browsers ignore it in a meta tag and log an error. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests;" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'none'; worker-src 'self'; manifest-src 'self'; frame-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; upgrade-insecure-requests" />
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="BLZ Visual" />
