@@ -39,8 +39,8 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   // the rubber grip stays matte
   const tinta = new THREE.MeshPhysicalMaterial({ color: 0x2c2723, metalness: .5, roughness: .32, clearcoat: .6, clearcoatRoughness: .25 });
   const carvao = new THREE.MeshPhysicalMaterial({ color: 0x3d3b37, metalness: .45, roughness: .35, clearcoat: .5, clearcoatRoughness: .3 });
-  const rust = new THREE.MeshStandardMaterial({ color: 0xC35423, metalness: .5, roughness: .3 });
-  const glass = new THREE.MeshStandardMaterial({ color: 0x2b2622, metalness: .9, roughness: .12, emissive: 0xC35423, emissiveIntensity: .14 });
+  const rust = new THREE.MeshStandardMaterial({ color: 0xB85C38, metalness: .5, roughness: .3 });
+  const glass = new THREE.MeshStandardMaterial({ color: 0x2b2622, metalness: .9, roughness: .12, emissive: 0xB85C38, emissiveIntensity: .14 });
   // rubberized grip + a pro-lens-style red ring + a green-coated glass element,
   // styled after a real DSLR body/lens (no photo used, just the look of one)
   const borracha = new THREE.MeshStandardMaterial({ color: 0x1e1610, metalness: .05, roughness: .85 });
@@ -69,7 +69,7 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   const screenTex = new THREE.CanvasTexture(screenCanvas);
   screenTex.colorSpace = THREE.SRGBColorSpace;
   const screenMat = new THREE.MeshStandardMaterial({ map: screenTex, emissiveMap: screenTex, emissive: 0xffffff, emissiveIntensity: .55, roughness: .35, metalness: .1 });
-  const flashMat = new THREE.MeshStandardMaterial({ color: 0xF9F8F3, metalness: .1, roughness: .3, emissive: 0xF9F8F3, emissiveIntensity: .2 });
+  const flashMat = new THREE.MeshStandardMaterial({ color: 0xF7EFE6, metalness: .1, roughness: .3, emissive: 0xF7EFE6, emissiveIntensity: .2 });
 
   /* --- smartphone --- */
   const phone = new THREE.Group();
@@ -208,12 +208,12 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   // studio-style lighting rig: strong key, soft fill, warm rim + a cool
   // kicker for edge separation — this is what makes the flat-black plastic
   // read as rounded product photography instead of a flat silhouette
-  scene.add(new THREE.AmbientLight(0xF9F8F3, .38));
+  scene.add(new THREE.AmbientLight(0xF7EFE6, .38));
   const key = new THREE.DirectionalLight(0xfff4e6, 2.2); key.position.set(4, 5.5, 6.5); scene.add(key);
-  const fillLight = new THREE.DirectionalLight(0xF9F8F3, .7); fillLight.position.set(-3, 1, 5); scene.add(fillLight);
-  const rim = new THREE.DirectionalLight(0xC35423, 1.4); rim.position.set(-6, -2, 2); scene.add(rim);
+  const fillLight = new THREE.DirectionalLight(0xF7EFE6, .7); fillLight.position.set(-3, 1, 5); scene.add(fillLight);
+  const rim = new THREE.DirectionalLight(0xB85C38, 1.4); rim.position.set(-6, -2, 2); scene.add(rim);
   const kicker = new THREE.DirectionalLight(0x8fb8c9, .8); kicker.position.set(2, -4, -3); scene.add(kicker);
-  const fill = new THREE.PointLight(0xF9F8F3, .8, 14); fill.position.set(0, 1.5, 7); scene.add(fill);
+  const fill = new THREE.PointLight(0xF7EFE6, .8, 14); fill.position.set(0, 1.5, 7); scene.add(fill);
 
   const BASE_ROT_X = -0.16;
   const BASE_ROT_Y = 0.24;
@@ -291,9 +291,9 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
   const dark = new THREE.MeshStandardMaterial({ color: 0x1c1815, metalness: .6, roughness: .4 });
   const body = new THREE.MeshStandardMaterial({ color: 0x2a2521, metalness: .55, roughness: .35 });
-  const rustM = new THREE.MeshStandardMaterial({ color: 0xC35423, metalness: .5, roughness: .35 });
-  const cream = new THREE.MeshStandardMaterial({ color: 0xF9F8F3, metalness: .2, roughness: .6 });
-  const propM = new THREE.MeshStandardMaterial({ color: 0xF9F8F3, metalness: .3, roughness: .5, transparent: true, opacity: .28, side: THREE.DoubleSide });
+  const rustM = new THREE.MeshStandardMaterial({ color: 0xB85C38, metalness: .5, roughness: .35 });
+  const cream = new THREE.MeshStandardMaterial({ color: 0xF7EFE6, metalness: .2, roughness: .6 });
+  const propM = new THREE.MeshStandardMaterial({ color: 0xF7EFE6, metalness: .3, roughness: .5, transparent: true, opacity: .28, side: THREE.DoubleSide });
 
   // central body
   const hull = new THREE.Mesh(new THREE.BoxGeometry(1.7, .5, 1.1), body);
@@ -338,10 +338,10 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   drone.rotation.x = 0.15;
 
   // lights
-  scene.add(new THREE.AmbientLight(0xF9F8F3, .5));
+  scene.add(new THREE.AmbientLight(0xF7EFE6, .5));
   const key = new THREE.DirectionalLight(0xffffff, 1.15); key.position.set(5, 7, 5); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xC35423, 1.0); rim.position.set(-6, 2, -3); scene.add(rim);
-  const under = new THREE.PointLight(0xC35423, .5); under.position.set(0, -4, 3); scene.add(under);
+  const rim = new THREE.DirectionalLight(0xB85C38, 1.0); rim.position.set(-6, 2, -3); scene.add(rim);
+  const under = new THREE.PointLight(0xB85C38, .5); under.position.set(0, -4, 3); scene.add(under);
 
   // interaction
   let targetYaw = 0, curYaw = 0, bank = 0, tBank = 0;
@@ -403,8 +403,8 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   const camera = new THREE.PerspectiveCamera(45, 1.6, 0.1, 100);
   camera.position.z = 12;
 
-  const rust = new THREE.MeshStandardMaterial({ color: 0xC35423, metalness: .4, roughness: .5, transparent: true, opacity: .9 });
-  const cream = new THREE.MeshBasicMaterial({ color: 0xF9F8F3, wireframe: true, transparent: true, opacity: .22 });
+  const rust = new THREE.MeshStandardMaterial({ color: 0xB85C38, metalness: .4, roughness: .5, transparent: true, opacity: .9 });
+  const cream = new THREE.MeshBasicMaterial({ color: 0xF7EFE6, wireframe: true, transparent: true, opacity: .22 });
   const geos = [
     new THREE.IcosahedronGeometry(1, 0),
     new THREE.TorusGeometry(.9, .32, 10, 24),
@@ -426,7 +426,7 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
     scene.add(mesh); shapes.push(mesh);
   }
   scene.add(new THREE.AmbientLight(0xffffff, .7));
-  const p = new THREE.PointLight(0xC35423, 1.2); p.position.set(4, 3, 8); scene.add(p);
+  const p = new THREE.PointLight(0xB85C38, 1.2); p.position.set(4, 3, 8); scene.add(p);
 
   let tmx = 0, tmy = 0, mx = 0, my = 0;
   addEventListener('pointermove', (e) => { tmx = (e.clientX / innerWidth - .5); tmy = (e.clientY / innerHeight - .5); });
