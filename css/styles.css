@@ -104,7 +104,7 @@ header.scrolled{border-bottom-color:var(--line)}
 .nav-cta{
   font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
   padding:.6rem 1.05rem;border:1.5px solid var(--tinta);border-radius:999px;
-  transition:.2s;
+  transition:background-color .2s, color .2s, transform .2s;
 }
 .nav-cta:hover{background:var(--tinta);color:var(--areia)}
 
@@ -136,7 +136,7 @@ header.scrolled{border-bottom-color:var(--line)}
   background:var(--rust-text);color:var(--areia);
   font-weight:600;font-size:1.02rem;
   padding:.95rem 1.6rem;border-radius:999px;
-  transition:.22s;border:1.5px solid var(--rust-text);
+  transition:background-color .22s, border-color .22s, transform .22s;border:1.5px solid var(--rust-text);
 }
 .btn-primary:hover{background:var(--rust-deep);border-color:var(--rust-deep);transform:translateY(-2px)}
 .btn-primary .arrow{transition:transform .22s}
@@ -318,7 +318,7 @@ footer .foot-meta a:hover{color:var(--rust-text)}
 
 /* ---------- NAV LINKS ---------- */
 .nav-links{display:flex;align-items:center;gap:1.6rem}
-.nav-links a.lnk{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--carvao);transition:.2s}
+.nav-links a.lnk{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--carvao);transition:color .2s}
 .nav-links a.lnk:hover{color:var(--rust-text)}
 
 /* ---------- LOGOS MARQUEE ---------- */
@@ -345,9 +345,9 @@ footer .foot-meta a:hover{color:var(--rust-text)}
 
 /* ---------- SOCIAL ---------- */
 .socials{display:flex;gap:.7rem}
-.socials a{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;transition:.2s}
+.socials a{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;transition:background-color .2s, border-color .2s, transform .2s}
 .socials a:hover{background:var(--tinta);border-color:var(--tinta)}
-.socials a svg{width:18px;height:18px;stroke:var(--tinta);fill:none;stroke-width:1.7;transition:.2s}
+.socials a svg{width:18px;height:18px;stroke:var(--tinta);fill:none;stroke-width:1.7;transition:stroke .2s}
 .socials a:hover svg{stroke:var(--areia)}
 
 /* ---------- MANIFESTO ---------- */
@@ -379,9 +379,42 @@ footer .foot-meta a:hover{color:var(--rust-text)}
 .statement blockquote{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,4.2vw,3.2rem);line-height:1.1;letter-spacing:-.02em;margin:1.2rem 0}
 .statement p{color:rgba(247,239,230,.85);font-size:1.1rem;max-width:48ch;margin:0 auto}
 
-/* reveal */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease, transform .7s ease}
+/* ---------- REVEAL ---------- */
+/* Decelerating curve only — nothing overshoots or bounces. */
+.reveal{
+  opacity:0;transform:translateY(18px);
+  transition:opacity .75s cubic-bezier(.22,.61,.36,1), transform .75s cubic-bezier(.22,.61,.36,1);
+}
 .reveal.in{opacity:1;transform:none}
+/* siblings in a grid arrive in sequence rather than all at once */
+.diffs .reveal:nth-child(2),.steps .reveal:nth-child(2){transition-delay:.08s}
+.diffs .reveal:nth-child(3),.steps .reveal:nth-child(3){transition-delay:.16s}
+.diffs .reveal:nth-child(4){transition-delay:.24s}
+.diffs .reveal:nth-child(5){transition-delay:.32s}
+.diffs .reveal:nth-child(6){transition-delay:.4s}
+.faq .reveal:nth-child(2){transition-delay:.06s}
+.faq .reveal:nth-child(3){transition-delay:.12s}
+.faq .reveal:nth-child(4){transition-delay:.18s}
+.faq .reveal:nth-child(5){transition-delay:.24s}
+
+/* ---------- FILM GRAIN ---------- */
+/* A little tooth over the flat cream so large areas do not read as plastic. */
+body::after{
+  content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;
+  opacity:.045;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- MICRO-INTERACTIONS ---------- */
+.btn-primary:active{transform:translateY(0) scale(.986)}
+.nav-cta:active{transform:scale(.97)}
+.faq summary{transition:color .2s}
+.faq summary:hover{color:var(--rust-text)}
+.faq details[open] p{animation:faq-in .35s cubic-bezier(.22,.61,.36,1) both}
+@keyframes faq-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.socials a:active{transform:scale(.94)}
+.phone:hover svg{transform:translateX(2px)}
+.phone svg{transition:transform .2s}
 
 /* ---------- RESPONSIVE ---------- */
 @media(max-width:1000px){
@@ -405,7 +438,14 @@ footer .foot-meta a:hover{color:var(--rust-text)}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .reveal{opacity:1;transform:none;transition:none}
+  .reveal{opacity:1;transform:none;transition:none;transition-delay:0s}
   .dot{animation:none}
+  .marquee-track{animation:none}
+  .faq details[open] p{animation:none}
+  .btn-primary:hover,.btn-offer:hover{transform:none}
 }
-:focus-visible{outline:3px solid var(--rust);outline-offset:3px;border-radius:6px}
+/* ---------- FOCUS ---------- */
+:focus-visible{outline:3px solid var(--rust-text);outline-offset:3px;border-radius:6px}
+/* the terracotta outline disappears against the ink bands, so flip it to cream */
+.contact :focus-visible,.statement :focus-visible{outline-color:var(--areia)}
+.btn-offer:focus-visible,.sticky-btn:focus-visible{outline-color:var(--tinta);outline-offset:4px}
