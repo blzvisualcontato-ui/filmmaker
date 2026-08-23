@@ -15,6 +15,19 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold: .15 });
 document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
+/* sticky mobile CTA: stays out of the way until the hero is behind you */
+(function () {
+  const bar = document.getElementById('stickyCta');
+  const hero = document.querySelector('.hero');
+  if (!bar || !hero) return;
+  bar.hidden = false;
+  if (!('IntersectionObserver' in window)) { bar.classList.add('is-up'); return; }
+  new IntersectionObserver(
+    ([entry]) => bar.classList.toggle('is-up', !entry.isIntersecting),
+    { threshold: 0 }
+  ).observe(hero);
+})();
+
 /* ---------- 3D HERO RIG: smartphone + professional camera (Three.js) ---------- */
 (function () {
   const canvas = document.getElementById('hero-canvas');

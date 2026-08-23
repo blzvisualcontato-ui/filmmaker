@@ -170,6 +170,42 @@ header.scrolled{border-bottom-color:var(--line)}
 .section-head h2{font-size:clamp(2rem,4.4vw,3.4rem);font-weight:700;margin-top:1rem}
 .section-head p{color:var(--carvao);font-size:1.1rem;max-width:52ch;margin-top:1rem}
 
+/* ---------- STICKY MOBILE CTA ---------- */
+/* Desktop keeps the CTA in the header, so this bar is mobile-only. */
+.sticky-cta{display:none}
+@media(max-width:820px){
+  .sticky-cta{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    display:flex;flex-direction:column;gap:.45rem;
+    padding:.7rem var(--pad) calc(.7rem + env(safe-area-inset-bottom));
+    background:rgba(247,239,230,.94);
+    backdrop-filter:blur(12px);
+    border-top:1px solid var(--line);
+    transform:translateY(115%);
+    transition:transform .3s cubic-bezier(.22,.61,.36,1);
+  }
+  .sticky-cta[hidden]{display:flex}          /* [hidden] is the pre-JS state; JS drives .is-up */
+  .sticky-cta.is-up{transform:translateY(0)}
+  .sticky-meta{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--carvao);text-align:center;
+  }
+  .sticky-btn{
+    display:flex;align-items:center;justify-content:center;gap:.6rem;
+    background:var(--rust-text);color:var(--areia);
+    border-radius:.85rem;padding:.95rem 1.2rem;
+    font-family:var(--display);font-weight:700;font-size:1.08rem;letter-spacing:-.01em;
+    transition:background .2s, transform .2s;
+  }
+  .sticky-btn:active{background:var(--rust-deep);transform:scale(.985)}
+  .sticky-btn .arrow{transition:transform .2s}
+  /* keep the footer clear of the bar */
+  body{padding-bottom:6.5rem}
+}
+@media(max-width:820px) and (prefers-reduced-motion:reduce){
+  .sticky-cta{transition:none}
+}
+
 /* ---------- SINGLE OFFER ---------- */
 .offer{background:var(--areia-warm);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .offer-card{
