@@ -43,8 +43,9 @@
      so it stays on display type, rules and icons; --rust-text is the variant
      small copy and filled buttons use. */
   --rust:#B85C38;
-  --rust-text:#A25131;
+  --rust-text:#9B4D2F;
   --rust-deep:#8C4529;
+  --rust-on-ink:#D96D42;   /* terracotta legible on the dark bands */
   --areia:#F7EFE6;
   --areia-warm:#EFE3D4;
   --carvao:#4A403A;
@@ -170,11 +171,11 @@ header.scrolled{border-bottom-color:var(--line)}
   color:var(--carvao);white-space:nowrap;
   text-transform:uppercase;
 }
-.hero-stage.has-3d .stage-caption{opacity:.6}
+.hero-stage.has-3d .stage-caption{opacity:.8}
 .scroll-hint{
   position:absolute;bottom:1.6rem;left:var(--pad);
   font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;
-  color:var(--carvao);opacity:.6;text-transform:uppercase;
+  color:var(--carvao);opacity:.8;text-transform:uppercase;
   display:flex;align-items:center;gap:.6rem;
 }
 .scroll-hint .dot{width:6px;height:6px;border-radius:50%;background:var(--rust);animation:pulse 1.8s infinite}
@@ -278,7 +279,7 @@ header.scrolled{border-bottom-color:var(--line)}
   background:var(--tinta);color:var(--areia);
   display:grid;grid-template-columns:1.15fr .85fr;gap:3rem;align-items:center;
 }
-.contact .mono-eyebrow{color:var(--rust)}
+.contact .mono-eyebrow{color:var(--rust-on-ink)}
 .contact h2{font-size:clamp(2.2rem,4.6vw,3.6rem);color:var(--areia);margin:1rem 0}
 .contact p.lead{color:rgba(247,239,230,.75);font-size:1.15rem;max-width:44ch;margin-bottom:2rem}
 .contact .btn-primary{background:var(--rust-text);border-color:var(--rust-text)}
@@ -325,7 +326,7 @@ footer .foot-meta a:hover{color:var(--rust-text)}
 .marquee{overflow:hidden;padding:2.2rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
 .marquee-track{display:flex;gap:3.5rem;width:max-content;animation:scrollx 26s linear infinite}
 .marquee:hover .marquee-track{animation-play-state:paused}
-.marquee-track span{font-family:var(--display);font-weight:700;font-size:1.5rem;color:var(--tinta);opacity:.32;white-space:nowrap;letter-spacing:-.01em}
+.marquee-track span{font-family:var(--display);font-weight:700;font-size:1.5rem;color:var(--tinta);opacity:.55;white-space:nowrap;letter-spacing:-.01em}
 @keyframes scrollx{to{transform:translateX(-50%)}}
 
 /* ---------- FAQ ---------- */
@@ -377,7 +378,7 @@ footer .foot-meta a:hover{color:var(--rust-text)}
 .statement .mono-eyebrow{color:var(--areia)}
 .statement .mono-eyebrow::before{background:var(--areia)}
 .statement blockquote{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,4.2vw,3.2rem);line-height:1.1;letter-spacing:-.02em;margin:1.2rem 0}
-.statement p{color:rgba(247,239,230,.85);font-size:1.1rem;max-width:48ch;margin:0 auto}
+.statement p{color:var(--areia);font-size:1.1rem;max-width:48ch;margin:0 auto}
 
 /* ---------- REVEAL ---------- */
 /* Decelerating curve only — nothing overshoots or bounces. */
