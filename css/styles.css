@@ -238,7 +238,11 @@ header.scrolled{border-bottom-color:var(--line)}
 /* "R$" sits on the numeral's baseline, not its cap height */
 .offer-price{display:flex;align-items:baseline;gap:.12em;margin:1.6rem 0 0;font-family:var(--display);color:var(--tinta)}
 .offer-price .cur{font-size:clamp(1.5rem,3.4vw,2.2rem);font-weight:700;letter-spacing:-.02em}
-.offer-price .amt{font-size:clamp(5rem,15vw,9.5rem);font-weight:800;letter-spacing:-.055em;line-height:.82}
+.offer-price .amt{
+  font-size:clamp(5rem,15vw,9.5rem);font-weight:800;letter-spacing:-.055em;line-height:.82;
+  font-variant-numeric:tabular-nums;
+  display:inline-block;min-width:3ch;   /* reserves the final width up front */
+}
 
 .offer-rule{border:0;height:3px;width:7.5rem;background:var(--rust);margin:2rem 0 0;border-radius:2px}
 
@@ -465,6 +469,33 @@ footer .foot-meta a:hover{color:var(--rust-text)}
 .statement blockquote{font-family:var(--display);font-weight:800;font-size:clamp(1.8rem,4.2vw,3.2rem);line-height:1.1;letter-spacing:-.02em;margin:1.2rem 0}
 .statement p{color:var(--areia);font-size:1.1rem;max-width:48ch;margin:0 auto}
 
+/* ---------- HAND-DRAWN STROKE ---------- */
+/* The smile is the one hand-drawn mark in the identity, so it is the thing
+   worth drawing on rather than fading in. */
+.smile path{stroke-dasharray:230;stroke-dashoffset:230}
+.smile.drawn path{animation:smile-draw .95s cubic-bezier(.22,.61,.36,1) forwards}
+@keyframes smile-draw{to{stroke-dashoffset:0}}
+
+/* ---------- OFFER CARD EMPHASIS ---------- */
+/* A slow, low-contrast breath on the CTA — present if you look, invisible if
+   you are reading. No attention-grabbing loop. */
+.btn-offer{position:relative;will-change:transform}
+.btn-offer::after{
+  content:"";position:absolute;inset:-3px;border-radius:1.15rem;
+  border:2px solid var(--rust);opacity:0;pointer-events:none;
+  animation:offer-breathe 4.5s ease-in-out infinite;
+}
+@keyframes offer-breathe{
+  0%,100%{opacity:0;transform:scale(.995)}
+  50%{opacity:.42;transform:scale(1)}
+}
+.btn-offer:hover::after,.btn-offer:focus-visible::after{animation-play-state:paused;opacity:0}
+
+/* ---------- PRESS FEEDBACK ---------- */
+/* transform only, so the tap response never triggers layout */
+.nav-cta,.btn-primary,.btn-offer,.sticky-btn,.socials a{will-change:transform}
+.sticky-btn:active,.btn-offer:active{transform:scale(.978)}
+
 /* ---------- REVEAL ---------- */
 /* Decelerating curve only — nothing overshoots or bounces. */
 .reveal{
@@ -528,6 +559,9 @@ body::after{
   .dot{animation:none}
   .marquee-track{animation:none}
   .faq details[open] p{animation:none}
+  .smile path{stroke-dasharray:none;stroke-dashoffset:0}
+  .smile.drawn path{animation:none}
+  .btn-offer::after{animation:none;opacity:0}
   .btn-primary:hover,.btn-offer:hover{transform:none}
 }
 /* ---------- FOCUS ---------- */

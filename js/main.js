@@ -29,6 +29,62 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 })();
 
 /* ----------------------------------------------------------------------
+   Small entrance animations.
+
+   All of it is CSS transitions plus a native IntersectionObserver — no
+   animation library, nothing that would land on the critical path. Each
+   effect fires once and then stops observing.
+   ---------------------------------------------------------------------- */
+(function () {
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* the hand-drawn smile draws itself in when it first appears */
+  const smiles = document.querySelectorAll('.smile');
+  if (smiles.length && !still && 'IntersectionObserver' in window) {
+    const drawer = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('drawn');
+        drawer.unobserve(e.target);
+      });
+    }, { threshold: .4 });
+    smiles.forEach((s) => drawer.observe(s));
+  } else {
+    smiles.forEach((s) => s.classList.add('drawn'));
+  }
+
+  /* prices count up on arrival */
+  const counters = document.querySelectorAll('[data-count-to]');
+  if (!counters.length) return;
+
+  function countUp(el) {
+    const to = Number(el.dataset.countTo);
+    if (!Number.isFinite(to)) return;
+    const DURATION = 750;              // well inside the 1s readability budget
+    const start = performance.now();
+    function step(now) {
+      const p = Math.min((now - start) / DURATION, 1);
+      // ease-out: fast off the mark, settles onto the real number
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = String(Math.round(to * eased));
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = String(to);
+    }
+    requestAnimationFrame(step);
+  }
+
+  if (still || !('IntersectionObserver' in window)) return;  // leave the real number in place
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      countUp(e.target);
+    });
+  }, { threshold: .6 });
+  counters.forEach((el) => io.observe(el));
+})();
+
+/* ----------------------------------------------------------------------
    3D hero scene — loaded on demand.
 
    Three.js is 670 KB, so it is never on the critical path. The module is
