@@ -1,0 +1,9 @@
+# Nothing here is needed to serve the site, so it should not be part of the
+# deployment surface. The repository is the place to read them.
+.git
+README.md
+
+# Netlify's header conventions. Vercel reads vercel.json instead; shipping
+# these would only publish the policy twice under a name Vercel ignores.
+_headers
+netlify.toml

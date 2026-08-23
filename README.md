@@ -1,25 +1,25 @@
 # BLZ Visual — site
 
 One-page site for BLZ Visual (video production for social media, Cuiabá-MT).
-Vanilla HTML/CSS/JS, no build step. Three interactive Three.js scenes (a
-lens in the hero, a drone in the showcase section, ambient shapes behind
-the contact section) driven by scroll position and cursor movement. Design
-and copy follow the approved reference file (`blzvisual.html`) exactly;
-this repo restructures it into separate files and hardens it for static
-hosting.
+Vanilla HTML/CSS/JS, no build step.
+
+The page sells a single offer — one month of content, six reels, R$ 697 —
+and every CTA opens WhatsApp. One interactive Three.js scene sits in the
+hero, loaded only once a visitor engages with the page.
 
 ## Structure
 
 ```
-index.html                  Single-page markup (pt-BR content)
-css/styles.css               Design system: palette, type, layout, animations
+index.html                     Single-page markup (pt-BR content)
+css/styles.css                 Design system: palette, type, layout, animations
+js/main.js                     Header state, scroll-reveal, sticky CTA, 3D gate
+js/hero-scene.js               The hero scene; importing it is what loads Three.js
 js/vendor/three.module.min.js  Three.js r160 ES module build (MIT), vendored
-js/vendor/three-global.js    Bridges the module build to a global `THREE`
-js/main.js                   Header scroll state, scroll-reveal, 3 Three.js scenes
-assets/fonts/                 Self-hosted Bricolage Grotesque, Hanken Grotesk, Space Mono
-assets/img/whatsapp-qr.svg    Pre-rendered QR code (WhatsApp deep link)
-_headers                      Security headers (Netlify convention)
-netlify.toml                  Build config + redundant header block
+assets/fonts/                  Self-hosted Bricolage Grotesque, Hanken Grotesk, Space Mono
+assets/img/whatsapp-qr.svg     Pre-rendered QR code (WhatsApp deep link)
+assets/img/og-image.png        1200x630 share image
+_headers                       Security headers (Netlify convention)
+netlify.toml                   Build config + redundant header block
 ```
 
 No bundler, no `npm install` required to run it — everything is a static file.
@@ -30,22 +30,34 @@ No bundler, no `npm install` required to run it — everything is a static file.
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`. Serving over `file://` won't work (the
-Three.js bridge is loaded as an ES module, which requires an HTTP origin).
+Then open `http://localhost:8000`. Serving over `file://` won't work — the
+hero scene is an ES module, which requires an HTTP origin.
+
+That command serves the whole working tree, `.git` included, so keep it on
+localhost. The deployed site does not expose it: `.vercelignore` keeps `.git`
+and the docs out of the deployment, and Vercel does not list directories.
 
 ## Notable implementation choices
 
-- **Three.js is vendored, not CDN-loaded.** The reference file used
-  `cdnjs.cloudflare.com` with the classic (deprecated since r150) global
-  build. Instead, `js/vendor/three.module.min.js` is the current ES module
-  build, and `js/vendor/three-global.js` is a one-line bridge
-  (`import * as THREE; window.THREE = THREE`) that exposes the same
-  `THREE.Xxx` API the ported scripts expect — so `js/main.js` is otherwise
-  an unmodified port of the reference script's three scene IIFEs (lens,
-  drone, ambient shapes), each scroll/pointer-driven and lerped for smooth
-  motion, pausing via `IntersectionObserver`/`visibilitychange` when
-  off-screen or the tab is hidden, and reading
-  `prefers-reduced-motion` to drop the idle animation.
+- **The 3D scene costs nothing until someone engages.** Three.js is 670 KB
+  and its scene is by far the most expensive thing on the page. `js/main.js`
+  ships no 3D at all; it dynamically imports `js/hero-scene.js` — which is
+  what pulls Three.js in — on the first `pointermove`, `wheel`, `touchstart`
+  or `keydown`. Plain `scroll` is deliberately not one of those signals,
+  because programmatic scrolling is not a person. Until then (and forever,
+  for anyone on `prefers-reduced-motion`, a two-core or 2 GB device, a saver
+  connection, or without WebGL2) the inline SVG aperture poster in the hero
+  is what shows. Rendering also pauses when the canvas leaves the viewport
+  or the tab is hidden, and touch pointers are ignored so the scene never
+  competes with a scroll.
+- **The scene is lit by a generated environment map.** Metallic and clearcoat
+  materials get nearly all their brightness from reflections, so without one
+  they render as flat near-black shapes regardless of how many lights are
+  added. A studio environment is painted into a canvas and prefiltered
+  through `PMREMGenerator` at startup. Geometry is authored in code rather
+  than loaded from a `.glb`: for shapes this simple that is smaller (no mesh
+  payload, no loader) and sharper on the hard edges. The focus-ring knurling
+  and dial ticks are `InstancedMesh`, so the detail is one draw call each.
 - **Fonts are self-hosted** (Bricolage Grotesque, Hanken Grotesk, Space
   Mono — Latin subset woff2) instead of linked from `fonts.googleapis.com`.
 - **The QR code is a pre-rendered static SVG** (`assets/img/whatsapp-qr.svg`,
@@ -84,8 +96,21 @@ port the header rules to that platform's equivalent (an nginx
 
 ## Content
 
-Pricing, phone number, and WhatsApp link come from the approved reference
-file and are treated as real business content, not placeholders. Portfolio
-tags/thumbnails in the "O que a gente produz" section are still
-illustrative gradients — swap them for real project thumbnails when
-available.
+The price, phone number and WhatsApp link are real business content, not
+placeholders. The offer is defined in one place — the `#oferta` section of
+`index.html` — and the WhatsApp deep links are written out in the markup
+rather than assembled at runtime, so they still work with JavaScript off.
+Changing the number means updating those `wa.me` hrefs and regenerating
+`assets/img/whatsapp-qr.svg`.
+
+## Accessibility and performance
+
+Checked with axe-core at 375 / 768 / 1440 (zero violations) and Lighthouse
+mobile (100 performance / 100 accessibility / 100 best practices / 100 SEO,
+stable across three runs).
+
+The brand terracotta `#B85C38` measures 3.99:1 on the cream, which clears
+WCAG AA only at large sizes. It is reserved for display type, rules and
+icons; `--rust-text` (`#9B4D2F`) backs small copy and filled buttons, and
+`--rust-on-ink` is the lighter tint used on the dark bands. Keep new
+terracotta text on those tokens rather than `--rust`.

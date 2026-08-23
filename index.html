@@ -3,20 +3,33 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BLZ Visual — Vídeo profissional para redes sociais · Cuiabá</title>
-<meta name="description" content="Produção de vídeo para redes sociais com qualidade, estratégia e resultado. Cuiabá e região." />
+<title>BLZ Visual — 1 mês de conteúdo pronto pra postar · Cuiabá</title>
+<meta name="description" content="Seis vídeos curtos para as suas redes, entregues em até 5 dias úteis, com contrato incluso, por R$ 697. Produção de vídeo em Cuiabá e região." />
 <meta name="color-scheme" content="light" />
-<meta name="theme-color" content="#F9F8F3" />
+<meta name="theme-color" content="#F7EFE6" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-<!-- Defense-in-depth CSP (authoritative policy is served as a real HTTP header — see /_headers) -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests;" />
+<!-- Defense-in-depth CSP. The authoritative policy is the real HTTP header in /_headers;
+     frame-ancestors is omitted here because browsers ignore it in a meta tag and log an error. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'none'; worker-src 'self'; manifest-src 'self'; frame-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; upgrade-insecure-requests" />
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="BLZ Visual — Vídeo profissional para redes sociais" />
-<meta property="og:description" content="Produção de vídeo para redes sociais com qualidade, estratégia e resultado. Cuiabá e região." />
+<meta property="og:site_name" content="BLZ Visual" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:title" content="BLZ Visual — 1 mês de conteúdo pronto pra postar · Cuiabá" />
+<meta property="og:description" content="Seis vídeos curtos para as suas redes, entregues em até 5 dias úteis, com contrato incluso, por R$ 697. Produção de vídeo em Cuiabá e região." />
+<!-- TODO: set og:url and make og:image absolute (https://your-domain/assets/img/og-image.png)
+     once the production domain exists — most crawlers will not resolve a relative og:image. -->
+<meta property="og:image" content="assets/img/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="BLZ Visual — 1 mês de conteúdo pronto pra postar, R$ 697" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="BLZ Visual — 1 mês de conteúdo pronto pra postar · Cuiabá" />
+<meta name="twitter:description" content="Seis vídeos curtos para as suas redes, entregues em até 5 dias úteis, com contrato incluso, por R$ 697. Produção de vídeo em Cuiabá e região." />
+<meta name="twitter:image" content="assets/img/og-image.png" />
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23231F1C'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-family='Georgia,serif' font-weight='700' font-size='13' fill='%23F9F8F3'%3EBLZ%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231C1917'/%3E%3Ctext x='16' y='19' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='11' fill='%23F7EFE6'%3EBLZ%3C/text%3E%3Cpath d='M9 24 Q16 27 23 24' stroke='%23B85C38' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
 
 <link rel="preload" href="assets/fonts/bricolage-var.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="assets/fonts/hanken-var.woff2" as="font" type="font/woff2" crossorigin />
@@ -39,10 +52,10 @@
     BLZ Visual
   </a>
   <nav class="nav-links" aria-label="Seções">
-    <a class="lnk" href="#planos">Planos</a>
+    <a class="lnk" href="#oferta">Oferta</a>
     <a class="lnk" href="#faq">Dúvidas</a>
   </nav>
-  <a class="nav-cta" href="#contato">Fazer orçamento</a>
+  <a class="nav-cta" href="https://wa.me/5565996402013?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20o%20pacote%20de%201%20m%C3%AAs%20de%20conte%C3%BAdo." target="_blank" rel="noopener noreferrer">Chama no WhatsApp</a>
 </header>
 
 <main id="top">
@@ -54,21 +67,26 @@
       <h1>Sua marca,<br><em>em foco.</em></h1>
       <svg class="smile" viewBox="0 0 200 30" aria-hidden="true"><path d="M8 10 C60 26 140 26 192 10"/></svg>
       <p class="lead">Produção de vídeo para redes sociais com qualidade, estratégia e resultado. Direto de Cuiabá para o seu negócio.</p>
-      <a class="btn-primary" href="#planos">Ver os pacotes <span class="arrow">→</span></a>
+      <a class="btn-primary" href="#oferta">Ver a oferta <span class="arrow">→</span></a>
     </div>
     <div class="hero-stage">
       <canvas id="hero-canvas"></canvas>
+      <svg class="stage-poster" viewBox="0 0 240 240" aria-hidden="true">
+        <circle class="ring" cx="120" cy="120" r="98"/>
+        <circle class="ring ring-2" cx="120" cy="120" r="74"/>
+        <g class="iris">
+          <path d="M120 34 A86 86 0 0 1 194 77 L120 120 Z"/>
+          <path d="M194 77 A86 86 0 0 1 194 163 L120 120 Z"/>
+          <path d="M194 163 A86 86 0 0 1 120 206 L120 120 Z"/>
+          <path d="M120 206 A86 86 0 0 1 46 163 L120 120 Z"/>
+          <path d="M46 163 A86 86 0 0 1 46 77 L120 120 Z"/>
+          <path d="M46 77 A86 86 0 0 1 120 34 L120 120 Z"/>
+        </g>
+        <circle class="pupil" cx="120" cy="120" r="27"/>
+      </svg>
       <div class="stage-caption">role a página para girar a cena</div>
     </div>
     <div class="scroll-hint"><span class="dot"></span> scroll</div>
-  </section>
-
-  <!-- STATS -->
-  <section class="stats">
-    <div class="stat reveal"><b>4<em> planos</em></b><span>do reels ao drone</span></div>
-    <div class="stat reveal"><b>3–5<em> dias</em></b><span>úteis de entrega</span></div>
-    <div class="stat reveal"><b>50<em>/50</em></b><span>pagamento facilitado</span></div>
-    <div class="stat reveal"><b>Cuiabá<em>+</em></b><span>e região atendida</span></div>
   </section>
 
   <!-- MANIFESTO -->
@@ -81,128 +99,42 @@
     </div>
   </section>
 
-  <!-- PLANS -->
-  <section class="section" id="planos">
-    <div class="section-head reveal">
-      <span class="mono-eyebrow">Pacotes de vídeo</span>
-      <h2>Escolha o plano do seu negócio</h2>
-      <p>Quatro pacotes pensados para diferentes momentos da sua marca — do primeiro reels à autoridade com imagens aéreas.</p>
-    </div>
+  <!-- OFFER -->
+  <section class="section offer" id="oferta">
+    <div class="offer-card reveal">
+      <span class="mono-eyebrow">BLZ Visual</span>
+      <h2 class="offer-title">1 mês de conteúdo<br>pronto pra postar</h2>
 
-    <div class="plans">
-      <!-- START -->
-      <article class="card reveal">
-        <span class="spec">f/2.0 · reels</span>
-        <div class="icon"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></div>
-        <h3>Start</h3>
-        <div class="price">R$&nbsp;294<small>,36</small></div>
-        <ul class="features">
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>2 vídeos curtos (reels)</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Gravação com gimbal</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Edição simples com legenda</li>
-        </ul>
-        <div class="prazo">↳ entrega em até 3 dias úteis</div>
-        <a class="btn-card" href="#contato">Quero este</a>
-      </article>
+      <p class="offer-price">
+        <span class="cur">R$</span><span class="amt">697</span>
+      </p>
 
-      <!-- ESSENCIAL -->
-      <article class="card reveal">
-        <span class="spec">f/1.8 · reels+</span>
-        <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 20V13M10 20V6M16 20V10M22 20V4" stroke-linecap="round"/></svg></div>
-        <h3>Essencial</h3>
-        <div class="price">R$&nbsp;447<small>,72</small></div>
-        <ul class="features">
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>4 vídeos curtos (reels)</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Gravação com gimbal</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Cortes dinâmicos + legendas</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>1 ajuste incluso</li>
-        </ul>
-        <div class="prazo">↳ entrega em até 4 dias úteis</div>
-        <a class="btn-card" href="#contato">Quero este</a>
-      </article>
+      <hr class="offer-rule">
 
-      <!-- COMPLETO -->
-      <article class="card featured reveal">
-        <span class="ribbon">★ Mais escolhido</span>
-        <span class="spec">f/1.4 · macro</span>
-        <div class="icon"><svg viewBox="0 0 24 24"><polygon points="12,3 14.5,9 21,9.3 16,13.5 17.7,20 12,16.2 6.3,20 8,13.5 3,9.3 9.5,9"/></svg></div>
-        <h3>Completo</h3>
-        <div class="price">R$&nbsp;545<small>,89</small></div>
-        <ul class="features">
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>6 reels + 1 vídeo institucional</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Detalhes em lente macro</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Legenda + trilha + identidade visual</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>1 ajuste incluso</li>
-        </ul>
-        <div class="prazo">↳ entrega em até 5 dias úteis</div>
-        <a class="btn-card" href="#contato">Quero este</a>
-      </article>
+      <ul class="offer-list">
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><polyline points="7,12.5 10.5,16 17,8.5"/></svg>
+          6 vídeos curtos (reels)
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><polyline points="7,12.5 10.5,16 17,8.5"/></svg>
+          Entrega em até 5 dias úteis
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><polyline points="7,12.5 10.5,16 17,8.5"/></svg>
+          Contrato de prestação de serviço incluso
+        </li>
+      </ul>
 
-      <!-- AUTORIDADE -->
-      <article class="card reveal">
-        <span class="spec">f/1.4 · drone</span>
-        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 9v6M9 12h6" stroke-linecap="round"/><circle cx="5" cy="5" r="2.4"/><circle cx="19" cy="5" r="2.4"/><circle cx="5" cy="19" r="2.4"/><circle cx="19" cy="19" r="2.4"/><path d="M6.6 6.6 10 10M17.4 6.6 14 10M6.6 17.4 10 14M17.4 17.4 14 14"/></svg></div>
-        <h3>Autoridade</h3>
-        <div class="price">R$&nbsp;649<small>,40</small></div>
-        <ul class="features">
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Tudo do Completo</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Imagens aéreas com drone</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>Prioridade de agenda</li>
-          <li><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>1 ajuste incluso</li>
-        </ul>
-        <div class="prazo">↳ produção com imagens aéreas</div>
-        <a class="btn-card" href="#contato">Quero este</a>
-      </article>
-    </div>
+      <a class="btn-offer" href="https://wa.me/5565996402013?text=Ol%C3%A1!%20Quero%20o%20pacote%20de%201%20m%C3%AAs%20de%20conte%C3%BAdo%3A%206%20reels%20por%20R%24%20697.%20Podemos%20fechar%3F" target="_blank" rel="noopener noreferrer">
+        <span class="btn-offer-text">
+          <strong>Chama no WhatsApp</strong>
+          <span>Fecha agora e já entra na agenda</span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
 
-    <div class="fineprint reveal">
-      <div class="fp">
-        <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20" stroke-linecap="round"/></svg>
-        <div><strong>Pagamento facilitado</strong><span>50% na confirmação + 50% na entrega.</span></div>
-      </div>
-      <div class="fp">
-        <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z" stroke-linejoin="round"/><path d="M13 3v5h5M9 13h6M9 17h6" stroke-linecap="round"/></svg>
-        <div><strong>Contrato incluso</strong><span>Prestação de serviço em todos os pacotes.</span></div>
-      </div>
-      <div class="fp">
-        <svg viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 0 0-14 0c0 4.7 7 11 7 11Z" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.4"/></svg>
-        <div><strong>Atendimento local</strong><span>Cuiabá e região.</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMPARISON -->
-  <section class="section process">
-    <div class="section-head reveal">
-      <span class="mono-eyebrow">Comparativo</span>
-      <h2>O que muda entre os planos</h2>
-      <p>Uma visão rápida lado a lado para você achar o pacote certo sem perder tempo.</p>
-    </div>
-    <div class="compare-wrap reveal">
-      <table class="compare">
-        <thead>
-          <tr>
-            <th>Recurso</th>
-            <th>Start</th>
-            <th>Essencial</th>
-            <th class="hot">Completo</th>
-            <th>Autoridade</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td class="feat">Vídeos curtos</td><td>2 reels</td><td>4 reels</td><td class="colhot">6 reels</td><td>6 reels</td></tr>
-          <tr><td class="feat">Vídeo institucional</td><td>—</td><td>—</td><td class="colhot on">✓</td><td class="on">✓</td></tr>
-          <tr><td class="feat">Gravação com gimbal</td><td class="on">✓</td><td class="on">✓</td><td class="colhot on">✓</td><td class="on">✓</td></tr>
-          <tr><td class="feat">Cortes + legendas</td><td>Legenda simples</td><td class="on">✓</td><td class="colhot on">✓</td><td class="on">✓</td></tr>
-          <tr><td class="feat">Trilha + identidade</td><td>—</td><td>—</td><td class="colhot on">✓</td><td class="on">✓</td></tr>
-          <tr><td class="feat">Detalhe em macro</td><td>—</td><td>—</td><td class="colhot on">✓</td><td class="on">✓</td></tr>
-          <tr><td class="feat">Imagens aéreas (drone)</td><td>—</td><td>—</td><td class="colhot">—</td><td class="on">✓</td></tr>
-          <tr><td class="feat">Prioridade de agenda</td><td>—</td><td>—</td><td class="colhot">—</td><td class="on">✓</td></tr>
-          <tr><td class="feat">Ajuste incluso</td><td>—</td><td class="on">1</td><td class="colhot on">1</td><td class="on">1</td></tr>
-          <tr><td class="feat">Prazo de entrega</td><td>3 dias úteis</td><td>4 dias úteis</td><td class="colhot">5 dias úteis</td><td>5 dias úteis</td></tr>
-          <tr><td class="feat">Investimento</td><td>R$ 294,36</td><td>R$ 447,72</td><td class="colhot on">R$ 545,89</td><td>R$ 649,40</td></tr>
-        </tbody>
-      </table>
+      <p class="offer-terms">50% na assinatura + 50% na entrega</p>
     </div>
   </section>
 
@@ -211,7 +143,7 @@
     <div class="section-head reveal">
       <span class="mono-eyebrow">Por que a BLZ</span>
       <h2>Feito para redes sociais, não para prateleira</h2>
-      <p>Produção enxuta, direta e com a cara da sua marca. O que está incluso em todo projeto:</p>
+      <p>Produção enxuta, direta e com a cara da sua marca. O que vem junto no seu mês de conteúdo:</p>
     </div>
     <div class="diffs">
       <div class="diff reveal">
@@ -225,14 +157,14 @@
         <p>Cortes dinâmicos, legendas e trilha alinhados à identidade visual do seu negócio.</p>
       </div>
       <div class="diff reveal">
-        <div class="di"><svg viewBox="0 0 24 24"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 10v4M10 12h4" stroke-linecap="round"/></svg></div>
-        <h3>Imagens aéreas com drone</h3>
-        <p>Tomadas de cima que transformam o material e dão outro nível de autoridade.</p>
+        <div class="di"><svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z" stroke-linejoin="round"/><path d="M9 11h6M9 15h4" stroke-linecap="round"/></svg></div>
+        <h3>Roteiro por nossa conta</h3>
+        <p>Você não precisa chegar com ideia pronta. A gente pensa o formato e os cortes com você.</p>
       </div>
       <div class="diff reveal">
         <div class="di"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z" stroke-linejoin="round"/><path d="M13 3v5h5" stroke-linejoin="round"/></svg></div>
         <h3>Contrato incluso</h3>
-        <p>Prestação de serviço formalizada em todos os pacotes — tudo combinado no papel.</p>
+        <p>Prestação de serviço formalizada por contrato — prazo, entregáveis e valores no papel.</p>
       </div>
       <div class="diff reveal">
         <div class="di"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20" stroke-linecap="round"/></svg></div>
@@ -247,28 +179,10 @@
     </div>
   </section>
 
-  <!-- 3D DRONE SHOWCASE -->
-  <section class="section showcase" id="showcase">
-    <div class="reveal">
-      <span class="mono-eyebrow">Imagens aéreas · plano Autoridade</span>
-      <h2>Sua marca vista de cima</h2>
-      <p>No pacote Autoridade, o drone entra em cena: tomadas aéreas que dão amplitude, contexto e aquele impacto de produção grande. Role a página e gire o drone.</p>
-      <div class="drone-specs">
-        <div><b>4K</b><span>captação aérea</span></div>
-        <div><b>360°</b><span>movimento livre</span></div>
-        <div><b>+drone</b><span>tudo do Completo</span></div>
-      </div>
-    </div>
-    <div class="drone-stage">
-      <canvas id="drone-canvas"></canvas>
-      <div class="hud"><span class="rec">REC</span><br>ALT 42m · 4K/60<br>arraste p/ orbitar</div>
-    </div>
-  </section>
-
   <!-- PORTFOLIO: removed for now, will return with real project videos -->
 
   <!-- SEGMENTS MARQUEE -->
-  <div class="marquee" aria-label="Segmentos ideais">
+  <div class="marquee" role="group" aria-label="Segmentos atendidos">
     <div class="marquee-track">
       <span>Restaurantes</span><span>·</span><span>Clínicas</span><span>·</span><span>Lojas</span><span>·</span><span>Estética</span><span>·</span><span>Imobiliárias</span><span>·</span><span>Academias</span><span>·</span><span>Eventos</span><span>·</span>
       <span>Restaurantes</span><span>·</span><span>Clínicas</span><span>·</span><span>Lojas</span><span>·</span><span>Estética</span><span>·</span><span>Imobiliárias</span><span>·</span><span>Academias</span><span>·</span><span>Eventos</span><span>·</span>
@@ -279,12 +193,12 @@
   <section class="section process">
     <div class="section-head reveal">
       <span class="mono-eyebrow">Como funciona</span>
-      <h2>Do gimbal ao post — em até 5 dias</h2>
+      <h2>Do gimbal ao post — em até 5 dias úteis</h2>
     </div>
     <div class="steps">
-      <div class="step reveal"><div class="num">01 / gravação</div><h3>A gente grava</h3><p>Captação com gimbal para movimento suave — e drone nos pacotes com imagens aéreas.</p></div>
+      <div class="step reveal"><div class="num">01 / gravação</div><h3>A gente grava</h3><p>Captação com gimbal no seu negócio, no dia combinado — movimento suave desde a gravação.</p></div>
       <div class="step reveal"><div class="num">02 / edição</div><h3>A gente edita</h3><p>Cortes dinâmicos, legendas, trilha e a identidade visual da sua marca em cada vídeo.</p></div>
-      <div class="step reveal"><div class="num">03 / entrega</div><h3>Você posta</h3><p>Conteúdo pronto em 3 a 5 dias úteis, com um ajuste incluso para deixar do seu jeito.</p></div>
+      <div class="step reveal"><div class="num">03 / entrega</div><h3>Você posta</h3><p>Seis vídeos prontos em até 5 dias úteis, com um ajuste incluso para deixar do seu jeito.</p></div>
     </div>
   </section>
 
@@ -306,15 +220,15 @@
     <div class="faq">
       <details class="reveal" open>
         <summary>Como funciona o pagamento? <span class="ico"></span></summary>
-        <p>É simples: 50% na confirmação do projeto para reservar a agenda e 50% na entrega do material final. Combinamos tudo por contrato antes de começar.</p>
+        <p>São 50% na assinatura do contrato, que já reserva a sua data na agenda, e 50% na entrega do material final. Tudo combinado no papel antes de a gente começar.</p>
       </details>
       <details class="reveal">
         <summary>Em quanto tempo recebo os vídeos? <span class="ico"></span></summary>
-        <p>Depende do pacote: de 3 dias úteis no Start até 5 dias úteis no Completo. Prazos contam a partir da gravação, e todos incluem ao menos um ajuste.</p>
+        <p>Em até 5 dias úteis, contados a partir da gravação. Você recebe os 6 vídeos prontos para postar, já com legenda.</p>
       </details>
       <details class="reveal">
         <summary>Vocês atendem fora de Cuiabá? <span class="ico"></span></summary>
-        <p>Atendemos Cuiabá e região. Para locais mais distantes, é só chamar no WhatsApp que combinamos o deslocamento e o melhor formato para o seu projeto.</p>
+        <p>Atendemos Cuiabá e região. Para locais mais distantes, é só chamar no WhatsApp que combinamos o deslocamento antes de fechar.</p>
       </details>
       <details class="reveal">
         <summary>Preciso ter roteiro pronto? <span class="ico"></span></summary>
@@ -322,20 +236,19 @@
       </details>
       <details class="reveal">
         <summary>E se eu quiser mudar algo depois? <span class="ico"></span></summary>
-        <p>Todos os pacotes a partir do Essencial já vêm com um ajuste incluso. Ajustes extras podem ser combinados à parte, sem surpresa.</p>
+        <p>Um ajuste já vem incluso, sem custo. Se precisar de mais, a gente combina à parte antes de fazer — nunca chega surpresa na fatura.</p>
       </details>
     </div>
   </section>
 
   <!-- CONTACT -->
   <section class="section contact" id="contato">
-    <canvas id="ambient-canvas" aria-hidden="true"></canvas>
     <div class="reveal">
       <span class="mono-eyebrow">Vamos começar</span>
       <h2>Vamos transformar a comunicação da sua marca?</h2>
-      <p class="lead">Vídeos que transmitem profissionalismo, geram conexão e resultado. Chame no WhatsApp e comece seu projeto agora.</p>
-      <a class="btn-primary" href="https://wa.me/5565996402013?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20um%20or%C3%A7amento%20de%20v%C3%ADdeo." target="_blank" rel="noopener">Chamar no WhatsApp <span class="arrow">→</span></a>
-      <a class="phone" href="https://wa.me/5565996402013" target="_blank" rel="noopener">
+      <p class="lead">Seis vídeos prontos para postar, entregues em até 5 dias úteis. Chama no WhatsApp e sua data já entra na agenda.</p>
+      <a class="btn-primary" href="https://wa.me/5565996402013?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20come%C3%A7ar%20meu%20m%C3%AAs%20de%20conte%C3%BAdo%20com%20a%20BLZ%20Visual." target="_blank" rel="noopener noreferrer">Chama no WhatsApp <span class="arrow">→</span></a>
+      <a class="phone" href="https://wa.me/5565996402013" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke-linejoin="round"/></svg>
         (65) 99640-2013
       </a>
@@ -353,23 +266,31 @@
     BLZ Visual
   </a>
   <div class="socials">
-    <a href="https://wa.me/5565996402013" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <a href="https://wa.me/5565996402013" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
       <svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke-linejoin="round"/></svg>
     </a>
-    <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+    <!-- TODO: placeholder — these point at the platforms' home pages, not BLZ's
+         profiles. Replace with the real profile URLs or remove the icons. -->
+    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>
     </a>
-    <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">
+    <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
       <svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="3.5"/><polygon points="10,9.2 15,12 10,14.8" fill="currentColor" stroke="none"/></svg>
     </a>
   </div>
   <div class="foot-meta">
     Conteúdo profissional para redes sociais · Cuiabá e região<br>
-    <a href="https://wa.me/5565996402013" target="_blank" rel="noopener">(65) 99640-2013</a> · © <span id="yr"></span> BLZ Visual
+    <a href="https://wa.me/5565996402013" target="_blank" rel="noopener noreferrer">(65) 99640-2013</a> · © <span id="yr"></span> BLZ Visual
   </div>
 </footer>
 
-<script type="module" src="js/vendor/three-global.js"></script>
+<aside class="sticky-cta" id="stickyCta" aria-label="Oferta" hidden>
+  <span class="sticky-meta">R$&nbsp;697 · 1 mês de conteúdo</span>
+  <a class="sticky-btn" href="https://wa.me/5565996402013?text=Ol%C3%A1!%20Quero%20o%20pacote%20de%201%20m%C3%AAs%20de%20conte%C3%BAdo%3A%206%20reels%20por%20R%24%20697.%20Podemos%20fechar%3F" target="_blank" rel="noopener noreferrer">
+    Chama no WhatsApp <span class="arrow" aria-hidden="true">→</span>
+  </a>
+</aside>
+
 <script src="js/main.js" defer></script>
 </body>
 </html>
