@@ -60,10 +60,16 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 
   if (!wantsScene()) return;
 
+  const tt = document.querySelector('.turntable');
+  const ttCanvas = document.getElementById('turntable-canvas');
+  const ttLabel = document.getElementById('ttLabel');
+  const ttBar = document.getElementById('ttBar');
+
   let loading = false;
   function load() {
     if (loading) return;
     loading = true;
+
     import('./hero-scene.js')
       .then((m) => {
         m.initHeroScene(canvas);
@@ -73,6 +79,35 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
         // Poster stays; a failed enhancement should never blank the hero.
         loading = false;
       });
+
+    // The turntable is far down the page, so it waits for its own section to
+    // come near before paying for a second WebGL context.
+    if (!tt || !ttCanvas) return;
+    const near = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      near.disconnect();
+      import('./showcase-scene.js')
+        .then((m) => {
+          m.initShowcaseScene(ttCanvas, tt, ttLabel);
+          tt.classList.add('has-3d');
+        })
+        .catch(() => { /* the written fallback in the section stays */ });
+    }, { rootMargin: '400px' });
+    near.observe(tt);
+  }
+
+  // The progress bar is cheap and reads the same scroll position the scene
+  // does, so it runs whether or not the 3D ever loads.
+  if (tt && ttBar) {
+    const trackProgress = () => {
+      const r = tt.getBoundingClientRect();
+      const travel = r.height - innerHeight;
+      const p = travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0;
+      ttBar.style.width = (p * 100).toFixed(1) + '%';
+    };
+    addEventListener('scroll', trackProgress, { passive: true });
+    addEventListener('resize', trackProgress, { passive: true });
+    trackProgress();
   }
 
   /*

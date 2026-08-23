@@ -372,6 +372,91 @@ footer .foot-meta a:hover{color:var(--rust-text)}
 .diff h3{font-size:1.2rem;margin-bottom:.4rem}
 .diff p{color:var(--carvao);font-size:.95rem}
 
+/* ---------- TURNTABLE (pinned 360) ---------- */
+/*
+ * A tall section with a sticky stage inside it. The stage holds still on screen
+ * while the page scrolls past at its normal rate, and that travel is what turns
+ * the carousel. Nothing intercepts wheel or touch — the scrollbar keeps moving
+ * natively and scrolling back or straight through behaves as it should.
+ */
+.turntable{
+  background:var(--tinta);
+  color:var(--areia);
+  height:340vh;                 /* the travel that maps to one full turn */
+  position:relative;
+}
+.tt-stage{
+  position:sticky;top:0;
+  height:100vh;min-height:520px;
+  display:grid;grid-template-columns:.85fr 1.15fr;align-items:center;gap:2rem;
+  padding:0 var(--pad);
+  overflow:hidden;
+}
+.tt-copy{position:relative;z-index:2;max-width:30rem}
+.tt-copy .mono-eyebrow{color:var(--rust-on-ink)}
+.tt-copy h2{
+  color:var(--areia);
+  font-size:clamp(2rem,4.4vw,3.4rem);
+  margin:1rem 0 2rem;letter-spacing:-.03em;
+}
+.tt-label{
+  display:flex;align-items:flex-start;gap:1rem;
+  border-top:1px solid rgba(247,239,230,.22);
+  padding-top:1.2rem;min-height:5.2rem;
+}
+.tt-label{transition:opacity .18s ease}
+.tt-label[data-swap="1"]{opacity:.15}
+.tt-index{
+  font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;
+  color:var(--rust-on-ink);padding-top:.35rem;
+}
+.tt-name{
+  display:block;font-family:var(--display);font-weight:700;
+  font-size:1.45rem;letter-spacing:-.02em;line-height:1.15;
+}
+.tt-note{display:block;color:rgba(247,239,230,.72);font-size:.95rem;margin-top:.2rem}
+.tt-progress{
+  margin-top:1.6rem;height:3px;width:100%;max-width:18rem;
+  background:rgba(247,239,230,.18);border-radius:2px;overflow:hidden;
+}
+.tt-progress span{
+  display:block;height:100%;width:0%;
+  background:var(--rust-on-ink);border-radius:2px;
+}
+.tt-hint{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(247,239,230,.62);margin:1rem 0 0;
+}
+.tt-canvas-wrap{position:relative;height:100%;display:flex;align-items:center}
+/* a pool of warm light behind the ring, so the dark bodies have something to
+   sit against instead of vanishing into the ink */
+.tt-canvas-wrap::before{
+  content:"";position:absolute;inset:6% 0 6% 0;pointer-events:none;
+  background:radial-gradient(ellipse 52% 46% at 52% 52%, rgba(184,92,56,.30), rgba(184,92,56,0) 70%);
+}
+#turntable-canvas{width:100%;height:88%;display:block;opacity:0;transition:opacity .8s ease}
+.turntable.has-3d #turntable-canvas{opacity:1}
+/* the written version of the same content, for anyone who never gets the scene */
+.tt-fallback{
+  position:absolute;inset:auto 0 auto 0;
+  color:rgba(247,239,230,.8);font-size:1.05rem;max-width:34ch;margin:0 auto;
+  text-align:center;
+}
+.turntable.has-3d .tt-fallback{display:none}
+
+@media(max-width:900px){
+  .tt-stage{grid-template-columns:1fr;gap:1rem;align-content:center}
+  .tt-canvas-wrap{height:52vh;order:-1}
+  .tt-copy h2{margin:.6rem 0 1.2rem}
+  .tt-label{min-height:4.6rem}
+}
+/* Without motion, a section three viewports tall is just dead scrolling. */
+@media(prefers-reduced-motion:reduce){
+  .turntable{height:auto}
+  .tt-stage{position:static;height:auto;min-height:0;padding-top:clamp(4rem,9vw,7.5rem);padding-bottom:clamp(4rem,9vw,7.5rem)}
+  .tt-hint,.tt-progress{display:none}
+}
+
 /* ---------- STATEMENT ---------- */
 .statement{background:var(--rust-text);color:var(--areia);text-align:center}
 .statement .wrap{max-width:56rem;margin:0 auto}
