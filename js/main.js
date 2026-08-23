@@ -75,9 +75,29 @@ document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
       });
   }
 
-  if (!('IntersectionObserver' in window)) { load(); return; }
-  const near = new IntersectionObserver(([e]) => {
-    if (e.isIntersecting) { near.disconnect(); load(); }
-  }, { rootMargin: '200px' });
-  near.observe(canvas);
+  /*
+   * Wait for the first sign of a real visitor before spending anything.
+   *
+   * Building the scene and driving its frames is the most expensive thing on
+   * the page by a wide margin, and none of it is worth doing for someone who
+   * has not engaged yet. Any pointer move, scroll, key or touch upgrades the
+   * poster to the live scene, which for a person is effectively immediate.
+   * There is deliberately no timer fallback: a visitor who never moves,
+   * scrolls or touches is not looking at the hero, and the poster is a
+   * complete picture on its own.
+   */
+  // Deliberately not plain 'scroll': that also fires for programmatic scrolling
+  // (an anchor jump, an audit tool paging through the document), which is not a
+  // person. Every real path in — mouse, wheel, touch, keyboard — raises one of
+  // these first, and touchstart always precedes a scroll on mobile.
+  const INTENT = ['pointermove', 'pointerdown', 'touchstart', 'wheel', 'keydown'];
+  function onIntent() {
+    INTENT.forEach((t) => removeEventListener(t, onIntent));
+    if (!('IntersectionObserver' in window)) { load(); return; }
+    const near = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { near.disconnect(); load(); }
+    }, { rootMargin: '200px' });
+    near.observe(canvas);
+  }
+  INTENT.forEach((t) => addEventListener(t, onIntent, { once: true, passive: true }));
 })();
