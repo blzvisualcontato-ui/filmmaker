@@ -33,6 +33,10 @@ python3 -m http.server 8000
 Then open `http://localhost:8000`. Serving over `file://` won't work — the
 hero scene is an ES module, which requires an HTTP origin.
 
+That command serves the whole working tree, `.git` included, so keep it on
+localhost. The deployed site does not expose it: `.vercelignore` keeps `.git`
+and the docs out of the deployment, and Vercel does not list directories.
+
 ## Notable implementation choices
 
 - **The 3D scene costs nothing until someone engages.** Three.js is 670 KB
