@@ -72,8 +72,9 @@ export function knurlRing(material, { radius, count = 56, w = 0.014, depth = 0.0
  */
 export function studioEnvironment(renderer) {
   const c = document.createElement('canvas');
-  c.width = 512; c.height = 256;
+  c.width = 1024; c.height = 512;
   const x = c.getContext('2d');
+  x.scale(2, 2);            // authored at 512x256, rendered at twice that
 
   const sky = x.createLinearGradient(0, 0, 0, 256);
   sky.addColorStop(0.00, '#ffffff');
@@ -98,6 +99,21 @@ export function studioEnvironment(renderer) {
   glow(370, 64, 84, 46, '#fff1e2', 0.85);
   glow(256, 214, 152, 58, '#B85C38', 0.42);
   glow(470, 148, 62, 62, '#9fbecd', 0.30);
+
+  // Hard-edged panels on top of the soft pools. A round gradient alone gives
+  // every highlight the same blurry oval; a rectangle with a real edge is what
+  // makes a surface read as reflecting a softbox instead of glowing on its own.
+  const panel = (px, py, w, h, fill, alpha) => {
+    x.save();
+    x.globalAlpha = alpha;
+    x.fillStyle = fill;
+    x.fillRect(px, py, w, h);
+    x.restore();
+  };
+  panel(66, 16, 116, 54, '#ffffff', 0.95);
+  panel(72, 22, 104, 42, '#ffffff', 1.0);
+  panel(330, 30, 84, 38, '#fff4e6', 0.8);
+  panel(214, 8, 60, 22, '#ffffff', 0.55);
 
   const tex = new THREE.CanvasTexture(c);
   tex.mapping = THREE.EquirectangularReflectionMapping;
@@ -128,17 +144,50 @@ export function shadowTexture() {
 
 /* -------------------------------------------------------------- materials */
 
+/**
+ * Fine noise used as a roughness map.
+ *
+ * A surface with one roughness value across the whole panel is the clearest
+ * sign of a render: real mouldings and coatings vary, so their highlights
+ * break up instead of sliding across as one clean shape.
+ */
+function microRoughness() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const x = c.getContext('2d');
+  const img = x.createImageData(256, 256);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const n = 150 + Math.random() * 46 + Math.sin(i * 0.00021) * 18;
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = n;
+    img.data[i + 3] = 255;
+  }
+  x.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(3, 3);
+  return t;
+}
+
 export function makeMaterials() {
+  const rough = microRoughness();
   return {
     shell: new THREE.MeshPhysicalMaterial({
-      color: 0x3a3430, metalness: .5, roughness: .36, clearcoat: .5, clearcoatRoughness: .3,
+      color: 0x3a3430, metalness: .5, roughness: .36, roughnessMap: rough,
+      clearcoat: .55, clearcoatRoughness: .28,
     }),
     shellDark: new THREE.MeshPhysicalMaterial({
-      color: 0x28231f, metalness: .48, roughness: .4, clearcoat: .42, clearcoatRoughness: .32,
+      color: 0x28231f, metalness: .48, roughness: .4, roughnessMap: rough,
+      clearcoat: .45, clearcoatRoughness: .3,
     }),
-    metal: new THREE.MeshStandardMaterial({ color: 0x9a938b, metalness: .96, roughness: .25 }),
-    metalDark: new THREE.MeshStandardMaterial({ color: 0x544f4a, metalness: .9, roughness: .38 }),
-    rubber: new THREE.MeshStandardMaterial({ color: 0x1d1712, metalness: .04, roughness: .94 }),
+    metal: new THREE.MeshStandardMaterial({
+      color: 0x9a938b, metalness: .96, roughness: .25, roughnessMap: rough,
+    }),
+    metalDark: new THREE.MeshStandardMaterial({
+      color: 0x544f4a, metalness: .9, roughness: .38, roughnessMap: rough,
+    }),
+    rubber: new THREE.MeshStandardMaterial({
+      color: 0x1d1712, metalness: .04, roughness: .94, roughnessMap: rough,
+    }),
     foam: new THREE.MeshStandardMaterial({ color: 0x2b2521, metalness: 0, roughness: 1 }),
     terra: new THREE.MeshPhysicalMaterial({ color: TERRA, metalness: .35, roughness: .3, clearcoat: .6 }),
     cream: new THREE.MeshStandardMaterial({ color: CREAM, metalness: .12, roughness: .48 }),
@@ -465,11 +514,30 @@ export function buildLapelMic(M) {
 /* ------------------------------------------------------------------ rig */
 
 /** Standard three-point lighting, shaped around whatever the environment does. */
-export function addLights(scene) {
+export function addLights(scene, { shadows = false } = {}) {
   scene.add(new THREE.AmbientLight(CREAM, .2));
   const key = new THREE.DirectionalLight(0xfff2e2, 1.85); key.position.set(4.2, 6, 6.5);
   const fill = new THREE.DirectionalLight(CREAM, .5); fill.position.set(-4, 1.4, 5);
   const rim = new THREE.DirectionalLight(TERRA, 1.45); rim.position.set(-5.5, -1.2, -2.5);
   const kick = new THREE.DirectionalLight(0x9fbecd, .55); kick.position.set(3, -3.5, -3);
+
+  if (shadows) {
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    // A tight frustum around the rig is what keeps a 1k map sharp; the default
+    // covers far more space than anything here occupies and comes out mushy.
+    const c = key.shadow.camera;
+    c.left = -3.4; c.right = 3.4; c.top = 3.4; c.bottom = -3.4;
+    c.near = 1; c.far = 22;
+    key.shadow.bias = -0.0016;
+    key.shadow.normalBias = 0.02;
+    key.shadow.radius = 3;
+  }
   scene.add(key, fill, rim, kick);
+  return key;
+}
+
+/** Mark a subtree so it both throws and catches the key light's shadow. */
+export function castAndReceive(root) {
+  root.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
 }

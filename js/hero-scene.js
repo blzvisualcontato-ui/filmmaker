@@ -9,18 +9,53 @@
  */
 import * as THREE from './vendor/three.module.min.js';
 import {
-  studioEnvironment, shadowTexture, makeMaterials,
-  buildGimbal, buildMacroLens, addLights,
+  studioEnvironment, makeMaterials,
+  buildGimbal, buildMacroLens, addLights, castAndReceive,
 } from './scene-kit.js';
 
 export function initHeroScene(canvas) {
   const renderer = new THREE.WebGLRenderer({
     canvas, antialias: true, alpha: true, powerPreference: 'high-performance',
   });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.02;
+
+  // This canvas is now the full viewport rather than a boxed square, so it can
+  // be four times the pixels it used to be. Rendering that at 1.75x on a large
+  // display is a lot of fragment work for no visible gain, so the ratio is
+  // trimmed as the stage gets bigger.
+  const cores = navigator.hardwareConcurrency || 4;
+  // Hard ceiling on the drawing buffer. A full-viewport stage on a large
+  // display would otherwise ask for several million fragments a frame, and the
+  // subject here is a matte object with soft highlights — it costs almost
+  // nothing visually to render under the layout size and let CSS scale it up.
+  const MAX_PIXELS = 1.15e6;
+  function pickPixelRatio() {
+    const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
+    const fit = Math.sqrt(MAX_PIXELS / (w * h));
+    return Math.max(0.75, Math.min(devicePixelRatio, 1.75, fit));
+  }
+  // Start coarse and sharpen once the scene has had a moment. The first frames
+  // are the expensive ones — geometry upload, shader compile and shadow map all
+  // land together — and nobody reads a hero in its first second. This keeps the
+  // opening cheap on a slow phone instead of stalling the main thread.
+  let ratioSettled = false;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1));
+  setTimeout(() => {
+    ratioSettled = true;
+    renderer.setPixelRatio(pickPixelRatio());
+    resize();
+  }, 1400);
+
+  // Real shadows rather than a painted blob: the contact edge is most of what
+  // sells the objects as sitting in a room instead of floating. It costs an
+  // extra depth pass, so weaker machines keep the cheaper look.
+  const useShadows = cores >= 4;
+  if (useShadows) {
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  }
 
   const scene = new THREE.Scene();
   scene.environment = studioEnvironment(renderer);
@@ -29,19 +64,19 @@ export function initHeroScene(canvas) {
   // buffer's precision on space nothing occupies, which is what made close
   // surfaces flicker against each other on phones. Nothing here is nearer than
   // about six units, so the near plane can move out and give the range back.
-  const camera = new THREE.PerspectiveCamera(30, 1, 2, 40);
-  camera.position.set(0, 1.7, 9.6);
-  camera.lookAt(0, -0.1, 0);
+  const camera = new THREE.PerspectiveCamera(34, 1, 2, 40);
+  camera.position.set(0, 1.5, 9.2);
+  camera.lookAt(0, -0.2, 0);
 
   const rig = new THREE.Group();
-  rig.scale.setScalar(1.28);
+  rig.scale.setScalar(1.2);
   scene.add(rig);
 
   const M = makeMaterials();
 
   /* ------------------------------------------------- phone on the gimbal */
   const gimbal = buildGimbal(M, { withPhone: true });
-  gimbal.position.set(-0.35, -0.55, 0);
+  gimbal.position.set(-0.35, -0.34, 0);
   gimbal.rotation.set(0.03, -0.42, 0);
   rig.add(gimbal);
 
@@ -52,16 +87,20 @@ export function initHeroScene(canvas) {
   macro.rotation.set(0.16, -0.5, 0.24);
   rig.add(macro);
 
-  /* ------------------------------------------------------------ shadow */
-  const shadow = new THREE.Mesh(
-    new THREE.PlaneGeometry(5.4, 3.0),
-    new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, opacity: .48, depthWrite: false }),
+  /* ------------------------------------------------------------ ground */
+  // Invisible except for what the key light throws onto it.
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(26, 26),
+    new THREE.ShadowMaterial({ opacity: .3 }),
   );
-  shadow.rotation.x = -Math.PI / 2;
-  shadow.position.set(0.1, -1.42, 0.15);
-  scene.add(shadow);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -1.72;
+  ground.receiveShadow = true;
+  scene.add(ground);
 
-  addLights(scene);
+  addLights(scene, { shadows: useShadows });
+  if (useShadows) castAndReceive(rig);
+  ground.visible = useShadows;
 
   /* ------------------------------------------------------- interaction */
   const BASE_X = -0.08, BASE_Y = 0.22;
@@ -88,7 +127,14 @@ export function initHeroScene(canvas) {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
+    if (ratioSettled) renderer.setPixelRatio(pickPixelRatio());
     camera.aspect = w / h;
+    // On a wide stage the copy owns the left third, so the rig is pushed right
+    // and framed tighter. On a phone it centres and pulls back.
+    const wide = camera.aspect > 1.25;
+    rig.position.x = wide ? 1.5 : 0;
+    rig.position.z = wide ? 0 : -1.4;
+    camera.fov = wide ? 34 : 42;
     camera.updateProjectionMatrix();
   }
   new ResizeObserver(resize).observe(canvas);
@@ -117,10 +163,6 @@ export function initHeroScene(canvas) {
     rig.position.y = Math.sin(t * 0.85) * 0.1;
 
     macro.rotation.z = 0.24 + curRot * 0.5;
-
-    const lift = (rig.position.y + 0.1) / 0.2;
-    shadow.scale.setScalar(1 - lift * 0.12);
-    shadow.material.opacity = 0.48 - lift * 0.12;
 
     renderer.render(scene, camera);
   }
